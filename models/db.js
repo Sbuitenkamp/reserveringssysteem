@@ -24,9 +24,14 @@ const pool = mariadb.createPool({
 const sequelize = new Sequelize(dbName, dbUser, dbPass, {
     host: dbHost,
     dialect: 'mariadb',
-    logging: false
+    logging: false,
+    dialectOptions: {
+        timezone: 'Etc/GMT+1',
+        useUTC: false
+    }
 });
 
+// table definitions (will create them if not exists)
 const reservations = sequelize.define('reservations', {
     id: {
         type: Sequelize.INTEGER,
@@ -187,15 +192,44 @@ const objects = sequelize.define('objects', {
     blockedUntil: { type: Sequelize.DATEONLY },
 });
 
+const users = sequelize.define('users', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    userName: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    superUser: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+    }
+});
+
 const tables = {
     reservations,
     guests,
     items,
-    objects
+    objects,
+    users
 };
 
+// sync all tables
 (async () => {
     for (const table in tables) await tables[table].sync({ force: false });
 })();
 
+// relations
+tables.reservations.hasOne(guests, { sourceKey: 'id', foreignKey: 'guestId', as: 'reservationGuest' });
+tables.reservations.hasOne(items, { sourceKey: 'id', foreignKey: 'itemId', as: 'reservationItem' });
+tables.reservations.hasOne(objects, { sourceKey: 'id', foreignKey: 'objectId', as: 'reservationObject' });
+
+// beam me up Scotty
 module.exports = tables;
