@@ -6,16 +6,17 @@ const fs = require('fs');
 const { Server: WebSocketServer } = require('ws');
 const db = require('./models/db');
 const wss = new WebSocketServer({ port: 40510 });
-const app = express();
+const server = express();
 const port = process.env.PORT || 3000;
 
 // express initialisation
-app.listen(port, () => console.log(`Server listening at http://localhost:${port}`));
-app.use(express.static(`${__dirname}/controllers`));
-app.use(express.static(`${__dirname}/styles`));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(session({
+server.listen(port, () => console.log(`Server listening at http://localhost:${port}`));
+server.set('view engine', 'ejs');
+server.use(express.static(`${__dirname}/controllers`));
+server.use(express.static(`${__dirname}/styles`));
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json());
+server.use(session({
     secret: 'yrla is thicc af',
     resave: true,
     saveUninitialized: true
@@ -23,19 +24,45 @@ app.use(session({
 
 // websocket
 wss.on('connection', ws => {
-    ws.on('message', message => console.log('received: %s', message));
-    ws.send();
+    ws.on('message', async message => {
+        let data;
+        message = JSON.parse(message);
+        switch (message.type) {
+            case 'create':
+                data = await create(message);
+                ws.send(JSON.stringify(data));
+                break;
+            case 'select':
+                data = await select(message);
+                console.log(data);
+                ws.send(JSON.stringify(data));
+                break;
+            case 'update':
+                data = await update(message);
+                ws.send(JSON.stringify(data));
+                break;
+            case 'delete':
+                data = await destroy(message);
+                ws.send(JSON.stringify(data));
+                break;
+            default:
+                throw new Error('database operation was not defined');
+        }
+    });
 });
 
 // dynamic file serving
-app.get('/', (req, res) => res.redirect('/index'));
-app.get('/:path', (req, res) => {
+server.get('/', (req, res) => res.redirect('/index'));
+server.get('/:path', (req, res) => {
     if (req.params.path.trim().toLowerCase().endsWith('.html')) return res.redirect(req.params.path.substring(0, req.params.path.length - 5));
-    const url = path.join(`${__dirname}/views/${req.params.path}.html`);
-    if (fs.existsSync(url)) {
-        fs.readFile(url, (err, data) => {
-            if (err) throw err;
-            res.end(data);
-        });
-    } else res.send('404 Page not found');
+    const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
+    if (fs.existsSync(url)) res.render(url);
+    else res.redirect('/page-not-found');
 });
+
+async function create({ table, options }) {}
+async function select({ table, options }) {
+    return await db[table].findOne(options);
+}
+async function update({ table, options, values }) {}
+async function destroy({ table, options }) {}

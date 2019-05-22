@@ -166,6 +166,10 @@ const objects = sequelize.define('objects', {
         type: Sequelize.STRING,
         allowNull: false
     },
+    description: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     objectKind: {
         type: Sequelize.STRING,
         allowNull: false
@@ -230,6 +234,40 @@ const tables = {
 tables.reservations.hasOne(guests, { sourceKey: 'id', foreignKey: 'guestId', as: 'reservationGuest' });
 tables.reservations.hasOne(items, { sourceKey: 'id', foreignKey: 'itemId', as: 'reservationItem' });
 tables.reservations.hasOne(objects, { sourceKey: 'id', foreignKey: 'objectId', as: 'reservationObject' });
+
+// test data
+tables.reservations.create({
+    number: 1,
+    guestId: 1,
+    itemId: 1,
+    objectId: 1,
+    dateArrival: new Date(),
+    dateDeparture: new Date(),
+    status: 1,
+    costTotal: 10,
+    costPaid: 5,
+    amountUnpaid: 10-5,
+    unpaidSince: new Date(),
+    validationStatus: null,
+    bookMethod: 'email',
+    preferredReservation: true,
+});
+
+tables.guests.create({
+    pronoun: 'Dhr.',
+    name: 'Buitenkamp, S',
+    email: 'buitenkamp.developer@gmail.com',
+    address: 'jongebuorren 5',
+    zipCode: '8493 LX',
+    location: 'Terherne',
+    country: 'Nederland',
+    brochureDate: null,
+    phone: '0613101625',
+    mobilePhone: null,
+    licensePlate: '43-lxr-q',
+    unwanted: false,
+    firstArrival: true,
+});
 
 // beam me up Scotty
 module.exports = tables;
