@@ -24,10 +24,10 @@ const pool = mariadb.createPool({
 const sequelize = new Sequelize(dbName, dbUser, dbPass, {
     host: dbHost,
     dialect: 'mariadb',
-    // logging: false,
-    logging: (str) => {
-        console.log(str + '\n');
-    },
+    logging: false,
+    // logging: (str) => {
+    //     console.log(str + '\n');
+    // },
     dialectOptions: {
         timezone: 'Etc/GMT+1',
         useUTC: false
