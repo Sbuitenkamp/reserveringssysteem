@@ -25,9 +25,15 @@ const sequelize = new Sequelize(dbName, dbUser, dbPass, {
     host: dbHost,
     dialect: 'mariadb',
     logging: false,
+    // logging: (str) => {
+    //     console.log(str + '\n');
+    // },
     dialectOptions: {
         timezone: 'Etc/GMT+1',
         useUTC: false
+    },
+    define: {
+        freezeTableName: true
     }
 });
 
@@ -40,6 +46,7 @@ const reservations = sequelize.define('reservations', {
         unique: true
     },
     number: {
+        // the number that the reservations will be grouped by
         type: Sequelize.INTEGER,
         allowNull: false
     },
@@ -77,8 +84,14 @@ const reservations = sequelize.define('reservations', {
         allowNull: false
     },
     preferredReservation: {
+        // whether the guest has a preferred place to reserve
         type: Sequelize.BOOLEAN,
         defaultValue: false
+    },
+    reservedPlace: {
+        // place reserved for guest
+        type: Sequelize.STRING,
+        allowNull: false
     }
 });
 
@@ -106,7 +119,7 @@ const guests = sequelize.define('guests', {
         type: Sequelize.STRING,
         allowNull: false
     },
-    location: {
+    cityTown: {
         type: Sequelize.STRING,
         allowNull: false
     },
@@ -131,7 +144,7 @@ const guests = sequelize.define('guests', {
     }
 });
 
-const items = sequelize.define('items', {
+const objectRow = sequelize.define('objectRow', {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -182,13 +195,19 @@ const objects = sequelize.define('objects', {
         type: Sequelize.DECIMAL,
         allowNull: false
     },
-    owner: { type: Sequelize.STRING },
+    owner: {
+        // the owner of the object, null if company owns the object
+        type: Sequelize.STRING,
+        defaultValue: null
+    },
     lendOut: {
+        // whether the object is currently lend out
         type: Sequelize.BOOLEAN,
         defaultValue: false
     },
     lendOutSince: { type: Sequelize.DATEONLY },
     blocked: {
+        // whether the object is blocked from rental
         type: Sequelize.BOOLEAN,
         defaultValue: false
     },
@@ -212,62 +231,100 @@ const users = sequelize.define('users', {
         allowNull: false
     },
     superUser: {
+        // if true, user has administrator permissions
         type: Sequelize.BOOLEAN,
         defaultValue: false
     }
 });
 
 const tables = {
-    reservations,
     guests,
-    items,
+    objectRow,
     objects,
+    reservations,
     users
 };
 
-// sync all tables
 (async () => {
+    // sync all tables
     for (const table in tables) await tables[table].sync({ force: false });
+    // relations
+    tables.reservations.hasOne(guests, { sourceKey: 'guestId', foreignKey: 'id', as: 'reservationGuest' });
+    tables.reservations.hasOne(objectRow, { sourceKey: 'itemId', foreignKey: 'id', as: 'reservationObjectRow' });
+    tables.reservations.hasOne(objects, { sourceKey: 'objectId', foreignKey: 'id', as: 'reservationObject' });
+    tables.objectRow.hasMany(objects, { sourceKey: 'code', foreignKey: 'code', as: 'objectRowObjects' });
+
+    // test data
+    await tables.reservations.findOrCreate({
+        defaults: {
+            number: 1,
+            guestId: 1,
+            itemId: 1,
+            objectId: 1,
+            dateArrival: new Date(),
+            dateDeparture: new Date(),
+            status: 1,
+            costTotal: 10,
+            costPaid: 5,
+            amountUnpaid: 10-5,
+            unpaidSince: new Date(),
+            validationStatus: null,
+            bookMethod: 'email',
+            preferredReservation: true,
+            reservedPlace: '12'
+        },
+        where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    await tables.guests.findOrCreate({
+        defaults: {
+            pronoun: 'Dhr.',
+            name: 'Buitenkamp, S',
+            email: 'buitenkamp.developer@gmail.com',
+            address: 'jongebuorren 5',
+            zipCode: '8493 LX',
+            country: 'Nederland',
+            brochureDate: null,
+            phone: '0613101625',
+            mobilePhone: null,
+            licensePlate: '43-lxr-q',
+            unwanted: false,
+            firstArrival: true,
+            cityTown: 'Terherne'
+        },
+        where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    await tables.objectRow.findOrCreate({
+        defaults: {
+            code: 'fts',
+            description: 'fiets',
+            cost: 22.50,
+            method: 'idk',
+            bill: '123456',
+            active: true
+        },
+        where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    await tables.objects.findOrCreate({
+        defaults: {
+            code: 'fts',
+            description: 'fiets 1',
+            objectKind: 'fiets',
+            objectType: 'null',
+            baseCost: 200.00,
+            owner: null,
+            lendOut: false,
+            lendOutSince: null,
+            blocked: false,
+            blockedSince: null,
+            blockedUntil: null
+        },
+        where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    // beam me up Scotty
+    for (const table in tables) module.exports[table] = tables[table];
+    // module.exports = tables;
 })();
-
-// relations
-tables.reservations.hasOne(guests, { sourceKey: 'id', foreignKey: 'guestId', as: 'reservationGuest' });
-tables.reservations.hasOne(items, { sourceKey: 'id', foreignKey: 'itemId', as: 'reservationItem' });
-tables.reservations.hasOne(objects, { sourceKey: 'id', foreignKey: 'objectId', as: 'reservationObject' });
-
-// test data
-tables.reservations.create({
-    number: 1,
-    guestId: 1,
-    itemId: 1,
-    objectId: 1,
-    dateArrival: new Date(),
-    dateDeparture: new Date(),
-    status: 1,
-    costTotal: 10,
-    costPaid: 5,
-    amountUnpaid: 10-5,
-    unpaidSince: new Date(),
-    validationStatus: null,
-    bookMethod: 'email',
-    preferredReservation: true,
-});
-
-tables.guests.create({
-    pronoun: 'Dhr.',
-    name: 'Buitenkamp, S',
-    email: 'buitenkamp.developer@gmail.com',
-    address: 'jongebuorren 5',
-    zipCode: '8493 LX',
-    location: 'Terherne',
-    country: 'Nederland',
-    brochureDate: null,
-    phone: '0613101625',
-    mobilePhone: null,
-    licensePlate: '43-lxr-q',
-    unwanted: false,
-    firstArrival: true,
-});
-
-// beam me up Scotty
-module.exports = tables;

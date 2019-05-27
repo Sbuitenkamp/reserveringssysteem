@@ -34,7 +34,6 @@ wss.on('connection', ws => {
                 break;
             case 'select':
                 data = await select(message);
-                console.log(data);
                 ws.send(JSON.stringify(data));
                 break;
             case 'update':
@@ -62,7 +61,7 @@ server.get('/:path', (req, res) => {
 
 async function create({ table, options }) {}
 async function select({ table, options }) {
-    return await db[table].findOne(options);
+    return await db[table].findAll(options).catch(e => console.error(e));
 }
 async function update({ table, options, values }) {}
 async function destroy({ table, options }) {}
