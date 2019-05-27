@@ -13,7 +13,6 @@ ws.onopen = () => {
                     'objectId'
                 ]
             },
-            // group: ['number'],
             include: [
                 {
                     association: 'reservationGuest',
@@ -44,6 +43,7 @@ ws.onmessage = ev => {
         if (renderedNumbers.includes(dataEntry.number)) {
             const row = document.querySelector(`#row${dataEntry.number}`);
             const parts = [...row.childNodes.values()];
+            // grouping by number and adding to existing row
             parts.forEach(part => {
                 if (part.nodeName === '#text') return;
                 if (part.className.includes('date')) return;
@@ -65,6 +65,7 @@ ws.onmessage = ev => {
                 }
             })
         } else {
+            // rendering the data in a row
             renderedNumbers.push(dataEntry.number);
             document.querySelector('table').innerHTML += `
 <tr id="row${dataEntry.number}">
