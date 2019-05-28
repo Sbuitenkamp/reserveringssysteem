@@ -1,0 +1,105 @@
+/* global */
+html, body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: var(--brokenWhite);
+}
+
+body {
+    display: grid;
+    grid-template-columns: 12vw 88vw;
+    grid-template-rows: 100vh;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* sidebar */
+.sidebar {
+    width: 12vw;
+    height: 100vh;
+    float: left;
+    background-color: var(--lightBlue);
+    margin-top: 0;
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 1fr 2fr 1fr;
+    position: fixed;
+}
+
+.sidebar .top, .sidebar .bottom {
+    margin: 15% auto;
+    width: 100%;
+    text-align: center;
+}
+
+.sidebar .top ul {
+    margin: 25% auto;
+    padding: 0;
+}
+
+.sidebar .top {
+    grid-row: 1;
+}
+
+.sidebar .bottom {
+    grid-row: 3;
+}
+
+.sidebar .top ul li {
+    list-style-type: none;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    width: 80%;
+    margin: 5% auto;
+    padding: 2.5% 0;
+}
+
+.sidebar a {
+    color: var(--brokenWhite);
+}
+
+.sidebar button {
+    border: solid 2px var(--brokenWhite);
+    color: var(--brokenWhite);
+    background: none;
+    padding: 5% 15%;
+    border-radius: 15px;
+}
+
+.sidebar .active, .sidebar .active a {
+    color: var(--lightBlue);
+    background-color: var(--brokenWhite);
+    border-radius: 15px;
+}
+
+/* content */
+.content {
+    grid-column: 2;
+    padding-left: 5%;
+}
+
+/* content scrollbar */
+.content::-webkit-scrollbar {
+    width: 20px;
+}
+
+.content::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: var(--lightBlue);
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background: var(--blue);
+}

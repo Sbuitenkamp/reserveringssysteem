@@ -1,4 +1,6 @@
-// event emmited when connected
+window.onload = makeActive(document.querySelector('.link>a[href="/reservation-overview"]'))
+
+// event emitted when connected
 ws.onopen = () => {
     // sending a send event to websocket server
     ws.send(JSON.stringify({
@@ -35,7 +37,7 @@ ws.onopen = () => {
         }
     }));
 };
-// event emmited when receiving message
+// event emitted when receiving message
 ws.onmessage = ev => {
     const data = JSON.parse(ev.data);
     let renderedNumbers = [];
@@ -45,12 +47,7 @@ ws.onmessage = ev => {
             const parts = [...row.childNodes.values()];
             // grouping by number and adding to existing row
             parts.forEach(part => {
-                if (part.nodeName === '#text') return;
-                if (part.className.includes('date')) return;
-                if (part.className.includes('address')) return;
-                if (part.className.includes('mobilePhone')) return;
-                if (part.className.includes('validation')) return;
-                if (part.className.includes('createdAt')) return;
+                if (validateNode(part)) return;
                 let classes = part.className.split(/ +/g);
                 if (part.className.includes('cost') || part.className.includes('amountUnpaid')) {
                     part.innerHTML = Number(part.innerHTML) + dataEntry[classes[0]];
@@ -90,6 +87,8 @@ ws.onmessage = ev => {
     <td class="preferredReservation">${dataEntry.preferedReservation ? 'ja' : 'nee'}</td>
     <td class="reservedPlace">${dataEntry.reservedPlace}</td>
     <td class="reservationGuest licensePlate">${dataEntry.reservationGuest.licensePlate}</td>
+    <td class="edit"></td>
+    <td class="delete"></td>
 </tr>
 `.trim();
         }

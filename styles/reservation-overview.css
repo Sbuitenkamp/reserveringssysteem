@@ -1,0 +1,63 @@
+.content {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* header */
+.header {
+    border-bottom: solid var(--grey) 1px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 90vw;
+}
+
+.header h1 {
+    color: var(--blue);
+}
+
+.header .plus {
+    float: right;
+    margin-right: 5%;
+}
+
+.header button {
+    width: 80%;
+    height: 50%;
+    border: none;
+    background: var(--blue);
+    color: var(--brokenWhite);
+    text-align: left;
+    padding-left: 10%;
+}
+
+.header .search {
+    width: 65%;
+    height: 50%;
+    border: solid var(--blue) 2px;
+    color: var(--blue);
+    padding: 0 10%;
+    position: relative;
+}
+
+.header .search .fa-search {
+    position: absolute;
+    right: 10%;
+    top: 30%;
+}
+
+.header .search input {
+    border: none;
+    background: none;
+    outline: none;
+    margin-top: 4%;
+}
+
+.header .search input::placeholder {
+    color: var(--blue);
+    opacity: 1; /* Firefox */
+}
+
+.header button, .header .search {
+    align-self: center;
+    border-radius: 25px;
+}
