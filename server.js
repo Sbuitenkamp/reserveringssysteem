@@ -22,19 +22,9 @@ server.use(bodyParser.json());
 server.use(session({
     secret: 'yrla is thicc af',
     resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 600000
-    }
+    saveUninitialized: false
 }));
 
-// User will not have access to the environment unless they are signed in
-const sessionCheck = (req, res, next) => {
-    if(!req.session.user && !req.cookies.user_sid) {
-        console.log('you\'re not allowed here!!');
-        next();
-    }
-};
 // websocket
 wss.on('connection', ws => {
     console.log('fuck');
@@ -73,10 +63,9 @@ wss.on('connection', ws => {
 
 // dynamic file serving
 server.get('/', (req, res) => res.redirect('/index'));
-server.get('/reservation-overview', sessionCheck, (req, res) => res.redirect('/'));
-
 server.get('/:path', (req, res) => {
     if (req.params.path.trim().toLowerCase().endsWith('.html')) return res.redirect(req.params.path.substring(0, req.params.path.length - 5));
+    if(!req.session.user && req.params.path !== 'index') return res.redirect('/index');
     const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
     if (fs.existsSync(url)) {
         res.render(url);
