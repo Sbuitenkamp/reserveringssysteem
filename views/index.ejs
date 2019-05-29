@@ -1,5 +1,25 @@
 <%- include ../models/header.ejs %>
+    <script src="index.js"></script>
+</head>
 <body>
-    <h1>yuh yeet</h1>
+    <div class="login">
+        <div class="login__container">
+            <div class="login__container__logo">
+                <img src="https://cdn.tnoorman.nl/project/rs/logo.png" alt="">
+                <h4>Reserveringssysteem</h4>
+            </div>
+            <form action="/authenticate" class="login__form" method="POST">
+                <div class="login__form__group">
+                    <label for="username">Gebruikersnaam</label>
+                    <input type="text" name="username" id="username" autocomplete="off">
+                </div>
+                <div class="login__form__group">
+                    <label for="password">Wachtwoord</label>
+                    <input type="password" name="password" id="password">
+                </div>
+                <input type="button" name="loginBtn" value="login" class="btn">
+            </form>
+        </div>
+    </div>
 </body>
 </html>
