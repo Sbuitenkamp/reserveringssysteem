@@ -4,7 +4,7 @@ const saltRounds = 10;
 const mariadb = require('mariadb');
 const { dbName, dbHost, dbUser, dbPass } = require('../config');
 
-// make sure the database exists before using sequelize
+// make sure the database exists before starting sequelize
 const pool = mariadb.createPool({
     host: dbHost,
     user: dbUser,
@@ -18,7 +18,7 @@ const pool = mariadb.createPool({
     } catch (err) {
         throw err;
     } finally {
-        if (conn) conn.end();
+        if (conn) await conn.end();
     }
 })();
 
@@ -290,6 +290,27 @@ const tables = {
         where: { id: 1 }
     }).catch(e => console.error(e));
 
+    await tables.reservations.findOrCreate({
+        defaults: {
+            number: 1,
+            guestId: 1,
+            itemId: 1,
+            objectId: 2,
+            dateArrival: new Date(),
+            dateDeparture: new Date(),
+            status: 1,
+            costTotal: 10,
+            costPaid: 5,
+            amountUnpaid: 10-5,
+            unpaidSince: new Date(),
+            validationStatus: null,
+            bookMethod: 'email',
+            preferredReservation: true,
+            reservedPlace: '12'
+        },
+        where: { id: 2 }
+    }).catch(e => console.error(e));
+
     await tables.guests.findOrCreate({
         defaults: {
             pronoun: 'Dhr.',
@@ -338,6 +359,7 @@ const tables = {
         where: { id: 1 }
     }).catch(e => console.error(e));
 
+
     await tables.users.findOrCreate({
         defaults: {
             userName: 'sbuik',
@@ -356,6 +378,21 @@ const tables = {
             superUser: false,
             createdAt: null,
             updatedAt: null
+
+    await tables.objects.findOrCreate({
+        defaults: {
+            code: 'fts',
+            description: 'fiets 2',
+            objectKind: 'fiets',
+            objectType: 'null',
+            baseCost: 200.00,
+            owner: null,
+            lendOut: false,
+            lendOutSince: null,
+            blocked: false,
+            blockedSince: null,
+            blockedUntil: null
+
         },
         where: { id: 2 }
     }).catch(e => console.error(e));
