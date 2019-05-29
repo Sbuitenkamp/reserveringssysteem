@@ -4,8 +4,8 @@
   "description": "Reservation system for Waterrecreatie Sneekermeer",
   "main": "server.js",
   "scripts": {
-    "dev": "node server",
-    "watch": "browser-sync start --proxy localhost:3000 --files=\"**/*\""
+    "dev": "nodemon --watch server",
+    "watch": "browser-sync start --proxy localhost:3000 --files=\"**/*.*\""
   },
   "repository": {
     "type": "git",

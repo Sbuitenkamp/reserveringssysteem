@@ -1,8 +1,14 @@
 :root {
+    --primary-blue: #0492D0;
     --blue: #2EA8DD;
     --lightBlue: #68B2D4;
     --darkBlue: #006896;
     --white: #fffff;
     --brokenWhite: #f8f8f8;
-    --grey: #b1b1b1;
+    --grey: #BDBDBD;
+    --yellow: #FFEA00;
+}
+
+* {
+    font-family: 'Montserrat';
 }
