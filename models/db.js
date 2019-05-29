@@ -1,4 +1,6 @@
 const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const mariadb = require('mariadb');
 const { dbName, dbHost, dbUser, dbPass } = require('../config');
 
@@ -235,6 +237,18 @@ const users = sequelize.define('users', {
         type: Sequelize.BOOLEAN,
         defaultValue: false
     }
+}, {
+    hooks: {
+        beforeCreate: async (user) => {
+            const salt = await bcrypt.genSaltSync(10);
+            user.password = await bcrypt.hashSync(toString(user), salt);
+        }
+    },
+    instanceMethods: {
+        validPassword: async password => {
+            return await bcrypt.compareSync(password, this.password);
+        }
+    }
 });
 
 const tables = {
@@ -345,6 +359,26 @@ const tables = {
         where: { id: 1 }
     }).catch(e => console.error(e));
 
+
+    await tables.users.findOrCreate({
+        defaults: {
+            userName: 'sbuik',
+            password: 'admin123',
+            superUser: true,
+            createdAt: null,
+            updatedAt: null
+        },
+        where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    await tables.users.findOrCreate({
+        defaults: {
+            userName: 'tnoor',
+            password: 'test',
+            superUser: false,
+            createdAt: null,
+            updatedAt: null
+
     await tables.objects.findOrCreate({
         defaults: {
             code: 'fts',
@@ -358,6 +392,7 @@ const tables = {
             blocked: false,
             blockedSince: null,
             blockedUntil: null
+
         },
         where: { id: 2 }
     }).catch(e => console.error(e));
