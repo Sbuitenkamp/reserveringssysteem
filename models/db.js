@@ -378,6 +378,9 @@ const tables = {
             superUser: false,
             createdAt: null,
             updatedAt: null
+        },
+        where: { id: 2 }
+    }).catch(e => console.error(e));
 
     await tables.objects.findOrCreate({
         defaults: {

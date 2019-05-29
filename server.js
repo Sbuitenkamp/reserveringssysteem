@@ -1,18 +1,13 @@
 const express = require('express');
 const server = express();
-const expressWs = require('express-ws')(server);
 const port = process.env.PORT || 3000;
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
 const { Server: WebSocketServer } = require('ws');
 const db = require('./models/db');
 const wss = new WebSocketServer({ port: 40510 });
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 // const browserSync = require('browser-sync');
 // const bs = browserSync.create().init({ proxy: `localhost:${port}`, watch: true, files: '**/*', logSnippet: false });
 // const bsConnect = require('connect-browser-sync')(bs, { injectHead: true });
@@ -24,7 +19,6 @@ server.use(express.static(`${__dirname}/controllers`));
 server.use(express.static(`${__dirname}/styles`));
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
-server.use(cookieParser());
 server.use(session({
     secret: 'yrla is thicc af',
     resave: false,
@@ -33,13 +27,6 @@ server.use(session({
         expires: 600000
     }
 }));
-server.ws('/echo', (ws, req) => {
-    ws.on('message', (msg) => {
-        ws.send(msg);
-    })
-});
-
-server.use(morgan('dev'));
 
 // User will not have access to the environment unless they are signed in
 const sessionCheck = (req, res, next) => {
