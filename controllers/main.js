@@ -16,3 +16,11 @@ function makeActive(node) {
     if (active) active.classList.remove('active');
     if (node) node.parentElement.classList.add('active');
 }
+
+function showPopUp(node) {
+    $.post('/reservation-pop-up', data => {
+        const containter = document.querySelector('#pop-up');
+        containter.innerHTML = data;
+        containter.style.display = 'block';
+    });
+}

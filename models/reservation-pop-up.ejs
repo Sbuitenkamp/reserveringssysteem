@@ -1,0 +1,25 @@
+<div class="reservation-pop-up" id="reservation-pop-up">
+    <form action="">
+        <input name="number" type="text" value="<%= dataEntry.number %>">
+        <input name="name" type="text" value="<%= dataEntry.reservationGuest.name %>">
+        <input name="dateArrival" type="text" value="<%= dataEntry.dateArrival %>">
+        <input name="dateDeparture" type="text" value="<%= dataEntry.dateDeparture %>">
+        <input name="description" type="text" value="<%= dataEntry.reservationObject.description %>">
+        <input name="status" type="text" value="<%= dataEntry.status %>">
+        <input name="costTotal" type="text" value="<%= dataEntry.costTotal %>">
+        <input name="costPaid" type="text" value="<%= dataEntry.costPaid %>">
+        <input name="amountUnpaid" type="text" value="<%= dataEntry.amountUnpaid %>">
+        <input name="unpaidSince" type="text" value="<%= dataEntry.unpaidSince %>">
+        <input name="email" type="text" value="<%= dataEntry.reservationGuest.email %>">
+        <input name="firstArrival" type="text" value="<%= dataEntry.reservationGuest.firstArrival ? 'ja' : 'nee' %>">
+        <input name="validationStatus" type="text" value="<%= dataEntry.validationStatus || 'geen' %>">
+        <input name="createdAt" type="text" value="<%= dataEntry.createdAt %>">
+        <input name="bookMethod" type="text" value="<%= dataEntry.bookMethod %>">
+        <input name="phone" type="text" value="<%= dataEntry.reservationGuest.phone %>">
+        <input name="mobilePhone" type="text" value="<%= dataEntry.reservationGuest.mobilePhone || 'geen' %>">
+        <input name="address" type="text" value="<%= dataEntry.reservationGuest.address%>, <%= dataEntry.reservationGuest.cityTown %>">
+        <input name="preferredReservation" type="text" value="<%= dataEntry.preferedReservation ? 'ja' : 'nee' %>">
+        <input name="reservedPlace" type="text" value="<%= dataEntry.reservedPlace %>">
+        <input name="licensePlate" type="text" value="<%= dataEntry.reservationGuest.licensePlate %>">
+    </form>
+</div>
