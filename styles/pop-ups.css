@@ -1,0 +1,10 @@
+.pop-up {
+    background-color: var(--brokenWhite);
+    margin: 0 auto;
+    height: 25%;
+    width: 25%;
+    border-radius: 15px;
+    display: none;
+    grid-column: 2;
+}
+.reservation-pop-up {}
