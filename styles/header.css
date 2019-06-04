@@ -1,4 +1,6 @@
 /* global */
+@import 'https://fonts.googleapis.com/css?family=Montserrat:100,200,300';
+
 html, body {
     width: 100vw;
     height: 100vh;
@@ -50,6 +52,10 @@ a {
 
 .sidebar .bottom {
     grid-row: 3;
+}
+
+.bottom button {
+    cursor: pointer;
 }
 
 .sidebar .top ul li {
