@@ -11,7 +11,6 @@ const { dbHost } = require('./config.json');
 const port = process.env.PORT || 3000;
 const wss = new WebSocketServer({ port: 40510 });
 
-// express initialisation
 server.listen(port, () => console.log(`Server listening at http://${dbHost}:${port}`));
 server.set('view engine', 'ejs');
 server.use(express.static(`${__dirname}/controllers`));
