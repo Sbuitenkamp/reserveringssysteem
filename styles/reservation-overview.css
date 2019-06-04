@@ -3,7 +3,15 @@
     overflow-y: auto;
 }
 
-/* header */
+.data-entry {
+    background-color: transparent;
+    border: none;
+    font-size: 12pt;
+    color: var(--black);
+    text-align: center;
+}
+
+/* header (not the sidebar esque header) */
 .header {
     border-bottom: solid var(--grey) 1px;
     display: grid;
