@@ -1,4 +1,4 @@
-@media only screen and ( max-width: 1150px ), screen and ( min-width: 1280px ) {
+@media only screen and ( min-width: 1080px ) {
     .login .login__container {
         width: 30%;
         height: 65vh;
