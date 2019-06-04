@@ -237,18 +237,6 @@ const users = sequelize.define('users', {
         type: Sequelize.BOOLEAN,
         defaultValue: false
     }
-}, {
-    hooks: {
-        beforeCreate: async (user) => {
-            const salt = await bcrypt.genSaltSync(10);
-            user.password = await bcrypt.hashSync(toString(user), salt);
-        }
-    },
-    instanceMethods: {
-        validPassword: async password => {
-            return await bcrypt.compareSync(password, this.password);
-        }
-    }
 });
 
 const tables = {
@@ -363,7 +351,7 @@ const tables = {
     await tables.users.findOrCreate({
         defaults: {
             userName: 'sbuik',
-            password: 'admin123',
+            password: bcrypt.hashSync('admin123', 10),
             superUser: true,
             createdAt: null,
             updatedAt: null
@@ -374,7 +362,7 @@ const tables = {
     await tables.users.findOrCreate({
         defaults: {
             userName: 'tnoor',
-            password: 'test',
+            password: bcrypt.hashSync('test', 10),
             superUser: false,
             createdAt: null,
             updatedAt: null
