@@ -21,7 +21,7 @@ server.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-})
+});
 server.use(session({
     secret: 'yrla is thicc af',
     resave: false,
@@ -35,7 +35,7 @@ server.use((req, res, next) => {
 // posts for actions
 server.post('/authenticate', (req, res) => {
     db.users.findOne({ where: { userName: req.body.username }}).then((user) => {
-        if(!user) {
+        if (!user) {
             console.log("Username or password is incorrect");
             res.redirect('/');
         } else {
@@ -44,13 +44,21 @@ server.post('/authenticate', (req, res) => {
                     console.log("Username or password is incorrect");
                     res.redirect('/');
                 } else {
-                    req.session.user = user.dataValues.userName;
+                    req.session.user = {
+                        id: user.id,
+                        username: user.userName,
+                        superUser: user.superUser
+                    };
                     res.redirect('/reservation-overview');
-                    console.log(req.session.user);
                 }
             });
         }
     });
+});
+
+server.post('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/index');
 });
 
 
@@ -86,10 +94,10 @@ wss.on('connection', ws => {
 server.get('/', (req, res) => res.redirect('/index'));
 server.get('/:path', (req, res) => {
     if (req.params.path.trim().toLowerCase().endsWith('.html')) return res.redirect(req.params.path.substring(0, req.params.path.length - 5));
+    if (!req.session.user && req.params.path !== 'index') return res.redirect('/index');
     const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
-    if (fs.existsSync(url)) {
-        res.render(url);
-    }
+    if (fs.existsSync(url)) res.render(url);
+    else res.redirect('/page-not-found');
 });
 
 async function create({ table, options }) {}
