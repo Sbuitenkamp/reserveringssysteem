@@ -21,38 +21,37 @@ server.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-})
+});
 server.use(session({
     secret: 'yrla is thicc af',
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }));
-server.use((req, res, next) => {
-    res.locals.user = req.session.user;
-    next();
-});
 
 // posts for actions
 server.post('/authenticate', (req, res) => {
-    db.users.findOne({ where: { userName: req.body.username }}).then((user) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    db.users.findOne({ where: { userName: username }}).then((user) => {
         if(!user) {
             console.log("Username or password is incorrect");
             res.redirect('/');
         } else {
-            bcrypt.compare(req.body.password, user.password, (err, result) => {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (err) return console.log(err);
                 if (!result) {
                     console.log("Username or password is incorrect");
                     res.redirect('/');
                 } else {
-                    req.session.user = user.dataValues.userName;
+                    req.session.username = user.userName;
+                    res.status(200);
                     res.redirect('/reservation-overview');
-                    console.log(req.session.user);
+                    // console.log(req.session.username);
                 }
             });
         }
     });
 });
-
 
 // websocket
 wss.on('connection', ws => {
