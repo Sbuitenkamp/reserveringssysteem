@@ -7,65 +7,111 @@
     background-color: transparent;
     border: none;
     font-size: 12pt;
-    color: var(--black);
     text-align: center;
+    color: var(--white);
 }
 
 /* header (not the sidebar esque header) */
 .header {
     border-bottom: solid var(--grey) 1px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    width: 90vw;
+    width: 400%;
+    display: flex;
+    margin-bottom: 20px
 }
 
 .header h1 {
     color: var(--blue);
 }
 
-.header .plus {
-    float: right;
-    margin-right: 5%;
+.header .header__buttons {
+    display: flex;
+    align-items: center;
+    width: 10.35%;
+    justify-content: space-evenly;
 }
 
-.header button {
-    width: 80%;
-    height: 50%;
-    border: none;
+.header .header__buttons .buttons_add,
+.header .header__buttons .buttons__search {
+    border-radius: 25px;
+}
+
+.header .header__buttons .buttons__add {
+    border: 2px solid var(--blue);
+    border-radius: 25px;
     background: var(--blue);
-    color: var(--brokenWhite);
-    text-align: left;
-    padding-left: 10%;
+    color: white;
+    display: flex;
+    width: 14vw;
+    padding: 1.1em;
+    align-items: center;
+    justify-content: space-evenly;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.header .search {
-    width: 65%;
-    height: 50%;
-    border: solid var(--blue) 2px;
+.header .header__buttons .buttons__search {
+    display: flex;
+    align-items: center;
     color: var(--blue);
-    padding: 0 10%;
     position: relative;
 }
 
-.header .search .fa-search {
+.header .header__buttons .buttons__search .fa-search {
     position: absolute;
-    right: 10%;
-    top: 30%;
+    right: 30px;
+    cursor: pointer;
 }
 
-.header .search input {
-    border: none;
+.header .header__buttons .buttons__search .search__input {
+    border: 2px solid var(--blue);
     background: none;
     outline: none;
-    margin-top: 4%;
+    border-radius: 25px;
+    padding: 1.1em 3.5em 1.1em 1.4em;
+    width: 70%;
 }
 
-.header .search input::placeholder {
+.header .header__buttons .buttons__search .search__input::placeholder {
     color: var(--blue);
     opacity: 1; /* Firefox */
 }
 
-.header button, .header .search {
-    align-self: center;
-    border-radius: 25px;
+.table {
+    /*display: table-cell;*/
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 400%;
+}
+
+.table td,
+.table th {
+    height: 40px;
+    padding: 0;
+}
+
+.table td {
+    text-align: center;
+    overflow: hidden;
+    color: white;
+    font-weight: bold;
+    border: 3px solid var(--darkBlue);
+}
+
+.table tr th {
+    background-color: var(--blue);
+    color: white;
+    border-bottom: none;
+}
+
+.table tbody tr {
+     border: 3px solid var(--blue);
+ }
+
+.table tbody tr:nth-child(2n+1) {
+    background-color: var(--lightBlue);
+}
+
+.table tbody tr:nth-child(2n) {
+    background-color: var(--primary-blue);
 }

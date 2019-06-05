@@ -1,5 +1,5 @@
 /* global */
-@import 'https://fonts.googleapis.com/css?family=Montserrat:100,200,300';
+@import 'https://fonts.googleapis.com/css?family=Montserrat:100,200,300,500,700';
 
 html, body {
     width: 100vw;
@@ -12,9 +12,7 @@ html, body {
 }
 
 body {
-    display: grid;
-    grid-template-columns: 12vw 88vw;
-    grid-template-rows: 100vh;
+    display: flex;
 }
 
 a {
@@ -22,17 +20,53 @@ a {
 }
 
 /* sidebar */
-.sidebar {
-    width: 12vw;
-    height: 100vh;
-    float: left;
-    background-color: var(--lightBlue);
-    margin-top: 0;
-    margin-left: 0;
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: 1fr 2fr 1fr;
-    position: fixed;
+/*
+    ! Changed CSS Grids to Flexbox, there is no need for complex layouts !
+            * Make sure to add || display: flex; || => header.css:4
+**/
+
+/* General styling sidebar */
+   .sidebar { /* header.css:25 */
+       width: 12vw;
+       height: 100vh;
+       background-color: var(--lightBlue);
+       position: fixed;
+       display: flex;
+       flex-direction: column;
+   }
+
+/**
+Top Section Sidebar
+    * General styling
+    * Unordered list has been fixed
+    * Elements have been centered properly
+*/
+
+.sidebar a {
+    color: var(--brokenWhite);
+}
+
+.sidebar .top { /* header.css:48 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 50vh;
+}
+
+.sidebar .top ul { /* header.css:38 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    height: 20vh;
+}
+
+.sidebar .top ul li { /* header.css:68 */
+    list-style-type: none;
+    text-align: center;
 }
 
 .sidebar .top, .sidebar .bottom {
@@ -41,55 +75,53 @@ a {
     text-align: center;
 }
 
-.sidebar .top ul {
-    margin: 25% auto;
-    padding: 0;
+.sidebar .active, .sidebar .active a { /* header.css:85 */
+    color: var(--blue);
+    background-color: #ffffffff;
+    border-radius: 25px;
+    padding: .6em .8em;
 }
 
-.sidebar .top {
-    grid-row: 1;
+/**
+Bottom Section Sidebar
+    * General styling
+    * Class  name removed from button in: div.bottom > form.bottom -> form.bottom__form
+    * Elements have been centered properly
+*/
+
+.sidebar .bottom { /* header.css:56 */
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 50%;
+    align-items: self-end;
 }
 
-.sidebar .bottom {
-    grid-row: 3;
+.sidebar .bottom .bottom__form {
+    height: 20vh;
+    display: flex;
+    align-items: center;
 }
 
-.bottom button {
-    cursor: pointer;
-}
-
-.sidebar .top ul li {
-    list-style-type: none;
-    text-decoration: none;
-    display: block;
-    text-align: center;
-    width: 80%;
-    margin: 5% auto;
-    padding: 2.5% 0;
-}
-
-.sidebar a {
-    color: var(--brokenWhite);
-}
-
-.sidebar button {
+.sidebar .bottom .bottom__form .form__button { /*  header.css:77 */
     border: solid 2px var(--brokenWhite);
     color: var(--brokenWhite);
     background: none;
-    padding: 5% 15%;
-    border-radius: 15px;
+    padding: .8em 2em;
+    border-radius: 25px;
+    cursor: pointer;
 }
 
-.sidebar .active, .sidebar .active a {
-    color: var(--lightBlue);
-    background-color: var(--brokenWhite);
-    border-radius: 15px;
-}
+/* Content */
+/* General styling for content
+    * Make sure to delete grid-column and padding-left: 5%
+**/
 
-/* content */
-.content {
-    grid-column: 2;
-    padding-left: 5%;
+.content { /* reservation-overview.css:1 */
+    overflow-x: auto;
+    overflow-y: auto;
+    margin-left: 12vw; // Could also do calc(12vw + 50px);
+    padding-left: 50px; // Do not use any calc() here, the padding affects the x-scrollbar
 }
 
 /* content scrollbar */
