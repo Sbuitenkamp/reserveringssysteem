@@ -67,7 +67,8 @@ server.get('/:path', (req, res) => {
     if (!req.session.user && req.params.path !== 'index') return res.redirect('/index');
     if (req.session.user && req.params.path === 'index') return res.redirect('/reservation-overview');
     const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
-    if (fs.existsSync(url)) res.render(url);
+    if (fs.existsSync(url) && req.session.user) res.render(url, { username: req.session.user.username });
+    else if (fs.existsSync(url)) res.render(url);
     else res.redirect('/page-not-found');
 });
 
@@ -98,7 +99,10 @@ server.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/index');
 });
-server.post('/reservation-pop-up', (req, res) => res.sendFile(path.join(`${__dirname}/models/reservation-pop-up.ejs`)));
+server.post('/reservation-pop-up', (req, res) => {
+    const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { node: req.body });
+    res.send(html);
+});
 
 // other functions
 async function create({ table, options }) {}
