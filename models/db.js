@@ -299,6 +299,27 @@ const tables = {
         where: { id: 2 }
     }).catch(e => console.error(e));
 
+    await tables.reservations.findOrCreate({
+        defaults: {
+            number: 2,
+            guestId: 2,
+            itemId: 1,
+            objectId: 1,
+            dateArrival: new Date(),
+            dateDeparture: new Date(),
+            status: 3,
+            costTotal: 15,
+            costPaid: 9,
+            amountUnpaid: 10-5,
+            unpaidSince: new Date(),
+            validationStatus: null,
+            bookMethod: 'email',
+            preferredReservation: true,
+            reservedPlace: '15'
+        },
+        where: { id: 3 }
+    }).catch(e => console.error(e));
+
     await tables.guests.findOrCreate({
         defaults: {
             pronoun: 'Dhr.',
@@ -316,6 +337,25 @@ const tables = {
             cityTown: 'Terherne'
         },
         where: { id: 1 }
+    }).catch(e => console.error(e));
+
+    await tables.guests.findOrCreate({
+        defaults: {
+            pronoun: 'Dhr.',
+            name: 'Noorman, T',
+            email: 'tnoorman@gmail.com',
+            address: 'dorsplaan 12',
+            zipCode: '8493 LL',
+            country: 'Nederland',
+            brochureDate: null,
+            phone: '0613101625',
+            mobilePhone: null,
+            licensePlate: '43-lxr-q',
+            unwanted: false,
+            firstArrival: true,
+            cityTown: 'Sneek'
+        },
+        where: { id: 2 }
     }).catch(e => console.error(e));
 
     await tables.objectRow.findOrCreate({

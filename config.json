@@ -1,6 +1,6 @@
 {
-  "dbName": "tesdev1q_reserveringssysteem",
+  "dbName": "reserveringssysteem",
   "dbHost": "localhost",
-  "dbUser": "tesdev1q_root",
-  "dbPass": "yrlaisthiccaf"
+  "dbUser": "root",
+  "dbPass": ""
 }

@@ -18,9 +18,15 @@ function makeActive(node) {
 }
 
 function showPopUp(node) {
-    $.post('/reservation-pop-up', data => {
-        const containter = document.querySelector('#pop-up');
-        containter.innerHTML = data;
-        containter.style.display = 'block';
+    let dataToSend = {};
+    const children = [...node.children].splice(0, node.children.length - 2);
+    for (const child of children) {
+        if (child.className.match(/ +/)) child.className = child.className.split(/ +/g)[1];
+        dataToSend[child.className] = child.childNodes[1].value || undefined;
+    }
+    $.post('/reservation-pop-up', dataToSend, data => {
+        const container = document.querySelector('#pop-up');
+        container.innerHTML = data;
+        container.style.display = 'block';
     });
 }

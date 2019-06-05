@@ -41,6 +41,7 @@ ws.onopen = () => {
 ws.onmessage = ev => {
     const data = JSON.parse(ev.data);
     let renderedNumbers = [];
+    console.log(data);
     for (const dataEntry of data) {
         if (renderedNumbers.includes(dataEntry.number)) {
             const row = document.querySelector(`#row${dataEntry.number}`);
@@ -49,7 +50,7 @@ ws.onmessage = ev => {
             parts.forEach(part => {
                 if (validateNode(part)) return;
                 let classes = part.className.split(/ +/g);
-                if (part.className.includes('cost') || part.className.includes('amountUnpaid')) part.innerHTML = Number(part.innerHTML) + dataEntry[classes[0]];
+                if (part.className.includes('cost') || part.className.includes('amountUnpaid')) part.childNodes[1].value = Number(part.childNodes[1].value) + dataEntry[classes[0]];
                 else {
                     if (classes.length === 1) {
                         if (typeof dataEntry[classes[0]] === 'boolean') return;

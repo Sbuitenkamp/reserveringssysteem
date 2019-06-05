@@ -1,34 +1,25 @@
 <div class="reservation-pop-up" id="reservation-pop-up">
     <form action="">
-        <input name="number" type="text" value="<%= dataEntry.number %>">
-        <input name="name" type="text" value="<%= dataEntry.reservationGuest.name %>">
-        <input name="dateArrival" type="text" value="<%= dataEntry.dateArrival %>">
-        <input name="dateDeparture" type="text" value="<%= dataEntry.dateDeparture %>">
-        <input name="description" type="text" value="<%= dataEntry.reservationObject.description %>">
-        <input name="status" type="text" value="<%= dataEntry.status %>">
-        <input name="costTotal" type="text" value="<%= dataEntry.costTotal %>">
-        <input name="costPaid" type="text" value="<%= dataEntry.costPaid %>">
-        <input name="amountUnpaid" type="text" value="<%= dataEntry.amountUnpaid %>">
-        <input name="unpaidSince" type="text" value="<%= dataEntry.unpaidSince %>">
-        <input name="email" type="text" value="<%= dataEntry.reservationGuest.email %>">
-        <input name="firstArrival" type="text" value="<%= dataEntry.reservationGuest.firstArrival ? 'ja' : 'nee' %>">
-        <input name="validationStatus" type="text" value="<%= dataEntry.validationStatus || 'geen' %>">
-        <input name="createdAt" type="text" value="<%= dataEntry.createdAt %>">
-        <input name="bookMethod" type="text" value="<%= dataEntry.bookMethod %>">
-        <input name="phone" type="text" value="<%= dataEntry.reservationGuest.phone %>">
-        <input name="mobilePhone" type="text" value="<%= dataEntry.reservationGuest.mobilePhone || 'geen' %>">
-        <input name="address" type="text" value="<%= dataEntry.reservationGuest.address%>, <%= dataEntry.reservationGuest.cityTown %>">
-        <input name="preferredReservation" type="text" value="<%= dataEntry.preferedReservation ? 'ja' : 'nee' %>">
-        <input name="reservedPlace" type="text" value="<%= dataEntry.reservedPlace %>">
-        <input name="licensePlate" type="text" value="<%= dataEntry.reservationGuest.licensePlate %>">
+        <input name="number" type="text" value="<%= node.number %>">
+        <input name="name" type="text" value="<%= node.name %>">
+        <input name="dateArrival" type="text" value="<%= node.dateArrival %>">
+        <input name="dateDeparture" type="text" value="<%= node.dateDeparture %>">
+        <input name="description" type="text" value="<%= node.description %>">
+        <input name="status" type="text" value="<%= node.status %>">
+        <input name="costTotal" type="text" value="<%= node.costTotal %>">
+        <input name="costPaid" type="text" value="<%= node.costPaid %>">
+        <input name="amountUnpaid" type="text" value="<%= node.amountUnpaid %>">
+        <input name="unpaidSince" type="text" value="<%= node.unpaidSince %>">
+        <input name="email" type="text" value="<%= node.email %>">
+        <input name="firstArrival" type="text" value="<%= node.firstArrival ? 'ja' : 'nee' %>">
+        <input name="validationStatus" type="text" value="<%= node.validationStatus || 'geen' %>">
+        <input name="createdAt" type="text" value="<%= node.createdAt %>">
+        <input name="bookMethod" type="text" value="<%= node.bookMethod %>">
+        <input name="phone" type="text" value="<%= node.phone %>">
+        <input name="mobilePhone" type="text" value="<%= node.mobilePhone || 'geen' %>">
+        <input name="address" type="text" value="<%= node.address%>, <%= node.cityTown %>">
+        <input name="preferredReservation" type="text" value="<%= node.preferedReservation ? 'ja' : 'nee' %>">
+        <input name="reservedPlace" type="text" value="<%= node.reservedPlace %>">
+        <input name="licensePlate" type="text" value="<%= node.licensePlate %>">
     </form>
 </div>
-
-<!-- TABLE -->
-<!--
-display: table-cell;
-table-layout: fixed;
-border-collapse: collapse;
-border-spacing: 0;
-width: 400%;
--->
