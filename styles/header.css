@@ -3,7 +3,7 @@
 
 html, body {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -14,6 +14,24 @@ html, body {
 body {
     display: flex;
 }
+
+/*body scrollbar*/
+/*body::-webkit-scrollbar {*/
+/*    width: 20px;*/
+/*}*/
+
+/*body::-webkit-scrollbar-track {*/
+/*    border-radius: 10px;*/
+/*}*/
+
+/*body::-webkit-scrollbar-thumb {*/
+/*    background: var(--lightBlue);*/
+/*    border-radius: 10px;*/
+/*}*/
+
+/*body::-webkit-scrollbar-thumb:hover {*/
+/*    background: var(--blue);*/
+/*}*/
 
 a {
     text-decoration: none;
@@ -26,14 +44,14 @@ a {
 **/
 
 /* General styling sidebar */
-   .sidebar { /* header.css:25 */
-       width: 12vw;
-       height: 100vh;
-       background-color: var(--lightBlue);
-       position: fixed;
-       display: flex;
-       flex-direction: column;
-   }
+.sidebar { /* header.css:25 */
+    width: 12vw;
+    height: 100vh;
+    background-color: var(--lightBlue);
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+}
 
 /**
 Top Section Sidebar
@@ -109,6 +127,22 @@ Bottom Section Sidebar
     background: none;
     padding: .8em 2em;
     border-radius: 25px;
+    cursor: pointer;
+}
+
+/* button */
+
+.buttons__add {
+    border: 2px solid var(--blue);
+    border-radius: 25px;
+    background: var(--blue);
+    color: white;
+    display: flex;
+    width: 14vw;
+    padding: 1.1em;
+    align-items: center;
+    justify-content: space-evenly;
+    font-weight: bold;
     cursor: pointer;
 }
 

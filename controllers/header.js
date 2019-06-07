@@ -1,3 +1,8 @@
 window.addEventListener('load', () => {
-    document.querySelector('#content').innerHTML += `<div class="pop-up" id="pop-up"></div>`;
+    const body = document.querySelector('body');
+    body.innerHTML += `<div class="pop-up-container" id="pop-up-container"></div>`;
+    body.addEventListener('click', function (e) {
+        const popUpContainer = document.querySelector('#pop-up-container');
+        if (e.target === popUpContainer) hidePopUp();
+    });
 });

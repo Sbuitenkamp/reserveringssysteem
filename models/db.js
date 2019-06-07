@@ -131,10 +131,10 @@ const guests = sequelize.define('guests', {
     },
     brochureDate: { type: Sequelize.DATEONLY },
     phone: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
     },
-    mobilePhone: { type: Sequelize.INTEGER },
+    mobilePhone: { type: Sequelize.STRING },
     licensePlate: { type: Sequelize.STRING },
     unwanted: {
         type: Sequelize.BOOLEAN,
@@ -237,6 +237,13 @@ const users = sequelize.define('users', {
         type: Sequelize.BOOLEAN,
         defaultValue: false
     }
+}, {
+    hooks: {
+        beforeCreate(user) {
+            const salt = bcrypt.genSaltSync(saltRounds);
+            user.password = bcrypt.hashSync(user.password, salt);
+        }
+    }
 });
 
 const tables = {
@@ -249,7 +256,14 @@ const tables = {
 
 (async () => {
     // sync all tables
-    for (const table in tables) await tables[table].sync({ force: false });
+    for (const table in tables) {
+        await tables[table].sync({ force: false })
+            .then(() => console.log(`${new Date()} | ${table} table synced`))
+            .catch(e => {
+                console.log(`${new Date()} | an error has occurred syncing the ${table} table:`);
+                console.error(e);
+            });
+    }
     // relations
     tables.reservations.hasOne(guests, { sourceKey: 'guestId', foreignKey: 'id', as: 'reservationGuest' });
     tables.reservations.hasOne(objectRow, { sourceKey: 'itemId', foreignKey: 'id', as: 'reservationObjectRow' });
@@ -391,7 +405,7 @@ const tables = {
     await tables.users.findOrCreate({
         defaults: {
             userName: 'sbuik',
-            password: bcrypt.hashSync('admin123', 10),
+            password: 'admin123',
             superUser: true,
             createdAt: null,
             updatedAt: null
@@ -402,7 +416,7 @@ const tables = {
     await tables.users.findOrCreate({
         defaults: {
             userName: 'tnoor',
-            password: bcrypt.hashSync('test', 10),
+            password: 'test',
             superUser: false,
             createdAt: null,
             updatedAt: null
