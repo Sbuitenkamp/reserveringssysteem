@@ -25,8 +25,45 @@ function showPopUp(node) {
         dataToSend[child.className] = child.childNodes[1].value || undefined;
     }
     $.post('/reservation-pop-up', dataToSend, data => {
-        const container = document.querySelector('#pop-up');
-        container.innerHTML = data;
+        const container = document.querySelector('#pop-up-container');
+        const popUp = document.createElement('div');
+        container.appendChild(popUp);
         container.style.display = 'block';
+        popUp.innerHTML = data;
+        popUp.className = 'pop-up';
+        popUp.id = 'pop-up';
+        popUp.style.display = 'block';
     });
+}
+
+function hidePopUp() {
+    const node = document.querySelector('#pop-up-container');
+    node.innerHTML = '';
+    node.style.display = 'none';
+}
+
+function formToJSON (elements) {
+    return [].reduce.call(elements, (data, element) => {
+        if (element.tagName === 'BUTTON') return data;
+        data[element.name] = element.value;
+        return data;
+    }, {});
+}
+
+function updateReservation(form) {
+    if (!form) return alert('Er is iets misgegaan');
+    const { costTotal, costPaid, number } = formToJSON(form);
+    ws.send(JSON.stringify({
+        type: 'update',
+        table: 'reservations',
+        options: {
+            where: { number }
+        },
+        values: {
+            costTotal,
+            costPaid,
+            amountUnpaid: costTotal - costPaid
+        }
+    }));
+    hidePopUp();
 }

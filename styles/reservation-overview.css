@@ -35,20 +35,6 @@
     border-radius: 25px;
 }
 
-.header .header__buttons .buttons__add {
-    border: 2px solid var(--blue);
-    border-radius: 25px;
-    background: var(--blue);
-    color: white;
-    display: flex;
-    width: 14vw;
-    padding: 1.1em;
-    align-items: center;
-    justify-content: space-evenly;
-    font-weight: bold;
-    cursor: pointer;
-}
-
 .header .header__buttons .buttons__search {
     display: flex;
     align-items: center;
@@ -82,15 +68,16 @@
     border-collapse: collapse;
     border-spacing: 0;
     width: 400%;
+    z-index: 1;
 }
 
 .table td,
 .table th {
-    height: 40px;
     padding: 0;
 }
 
 .table td {
+    height: 40px;
     text-align: center;
     overflow: hidden;
     color: white;
@@ -98,7 +85,8 @@
     border: 3px solid var(--darkBlue);
 }
 
-.table tr th {
+.table thead tr th {
+    height: 50px;
     background-color: var(--blue);
     color: white;
     border-bottom: none;
@@ -108,10 +96,10 @@
      border: 3px solid var(--blue);
  }
 
-.table tbody tr:nth-child(2n+1) {
-    background-color: var(--lightBlue);
+.table tbody:nth-child(odd) {
+    background-color: var(--blue);
 }
 
-.table tbody tr:nth-child(2n) {
+.table tbody:nth-child(even) {
     background-color: var(--primary-blue);
 }

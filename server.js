@@ -35,19 +35,32 @@ wss.on('connection', ws => {
         message = JSON.parse(message);
         switch (message.type) {
             case 'create':
-                data = await create(message);
+                data = await create(message).catch(e => {
+                    console.log(new Date() + '| an error occurred during the creation of one or more database entries:');
+                    console.error(e);
+                });
                 ws.send(JSON.stringify(data));
                 break;
             case 'select':
-                data = await select(message);
+                data = await select(message).catch(e => {
+                    console.log(new Date() + '| an error occurred during the selection of one or more database entries:');
+                    console.error(e);
+                });
                 ws.send(JSON.stringify(data));
                 break;
             case 'update':
-                data = await update(message);
+                await update(message).catch(e => {
+                    console.log(new Date() + '| an error occurred during the updating of one or more database entries:');
+                    console.error(e);
+                });
+                data = { update: true };
                 ws.send(JSON.stringify(data));
                 break;
             case 'delete':
-                data = await destroy(message);
+                data = await destroy(message).catch(e => {
+                    console.log(new Date() + '| an error occurred during the deletion of one or more database entries:');
+                    console.error(e);
+                });
                 ws.send(JSON.stringify(data));
                 break;
             default:
@@ -103,9 +116,17 @@ server.post('/reservation-pop-up', (req, res) => {
 });
 
 // other functions
-async function create({ table, options }) {}
-async function select({ table, options }) {
-    return await db[table].findAll(options).catch(e => console.error(e));
+function create({ table, options }) {
+    console.log(`${new Date()} | creating entry in ${table}...`);
 }
-async function update({ table, options, values }) {}
-async function destroy({ table, options }) {}
+function select({ table, options }) {
+    console.log(`${new Date()} | fetching ${options.limit || 'all'} entries from ${table}...`);
+    return db[table].findAll(options);
+}
+function update({ table, options, values }) {
+    console.log(`${new Date()} | updating entries from ${table}...`);
+    return db[table].update(values, options);
+}
+function destroy({ table, options }) {
+    console.log(`${new Date()} | deleting entries from ${table}...`);
+}

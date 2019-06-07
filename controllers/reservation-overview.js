@@ -1,7 +1,7 @@
 window.onload = makeActive(document.querySelector('.link>a[href="/reservation-overview"]'))
 
 // event emitted when connected
-ws.onopen = () => {
+function wsOnOpen() {
     // sending a send event to websocket server
     ws.send(JSON.stringify({
         table: 'reservations',
@@ -36,12 +36,19 @@ ws.onopen = () => {
             ]
         }
     }));
-};
+}
+
+ws.onopen = wsOnOpen;
+
 // event emitted when receiving message
 ws.onmessage = ev => {
     const data = JSON.parse(ev.data);
+    const table = document.querySelector('table');
     let renderedNumbers = [];
-    console.log(data);
+    if (data.update) {
+        for (let i = table.rows.length - 1; i > 0; i--) table.deleteRow(i);
+        return wsOnOpen();
+    }
     for (const dataEntry of data) {
         if (renderedNumbers.includes(dataEntry.number)) {
             const row = document.querySelector(`#row${dataEntry.number}`);
@@ -64,7 +71,8 @@ ws.onmessage = ev => {
         } else {
             // rendering the data in a row
             renderedNumbers.push(dataEntry.number);
-            document.querySelector('table').innerHTML += `
+            table.innerHTML += `
+<tbody class="tbody">
 <form action="/reservation-pop-up" method="get">
     <tr onclick="showPopUp(this)" id="row${dataEntry.number}">
         <td class="number">
@@ -134,6 +142,7 @@ ws.onmessage = ev => {
         <td class="delete"></td>
     </tr>
 </form>
+</tbody>
 `.trim();
         }
     }
