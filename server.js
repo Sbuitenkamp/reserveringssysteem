@@ -27,10 +27,6 @@ server.use(session({
     resave: false,
     saveUninitialized: false
 }));
-server.use((req, res, next) => {
-    res.locals.user = req.session.user;
-    next();
-});
 
 // websocket
 wss.on('connection', ws => {
@@ -74,12 +70,14 @@ server.get('/:path', (req, res) => {
 
 // posts for actions
 server.post('/authenticate', (req, res) => {
-    db.users.findOne({ where: { userName: req.body.username }}).then((user) => {
+    const { username, password } = req.body;
+    db.users.findOne({ where: { userName: username }}).then((user) => {
         if (!user) {
             console.log("Username or password is incorrect");
             res.redirect('/');
         } else {
-            bcrypt.compare(req.body.password, user.password, (err, result) => {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (err) throw err;
                 if (!result) {
                     console.log("Username or password is incorrect");
                     res.redirect('/');
