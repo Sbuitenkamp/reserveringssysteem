@@ -63,6 +63,7 @@ const reservations = sequelize.define('reservations', {
     objectId: { type: Sequelize.INTEGER },
     dateArrival: {
         type: Sequelize.DATEONLY,
+        defaultValue: Sequelize.NOW,
         allowNull: false
     },
     dateDeparture: {

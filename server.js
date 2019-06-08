@@ -82,6 +82,8 @@ server.get('/:path', (req, res) => {
 });
 
 // posts for actions
+
+// authenticate the user who tries to login
 server.post('/authenticate', (req, res) => {
     const { username, password } = req.body;
     db.users.findOne({ where: { userName: username }}).then((user) => {
@@ -106,10 +108,51 @@ server.post('/authenticate', (req, res) => {
         }
     });
 });
+
+// create a new guest
+server.post('/new-guest', (req, res) => {
+    const { pronoun, name, email, 
+            address, zipCode, cityTown,
+            country, brochureDate, phone,
+            mobilePhone, licensePlate, firstArrival
+        } = req.body;
+    
+    db.guests.create({
+        pronoun: pronoun,
+        name: name,
+        email: email,
+        address: address,
+        zipCode: zipCode,
+        cityTown: cityTown,
+        country: country,
+        brochureDate: brochureDate,
+        phone: phone,
+        mobilePhone: mobilePhone,
+        licensePlate: licensePlate,
+        firstArrival: firstArrival
+        
+    }).then(newGuest => { console.log(newGuest); })
+});
+
+// create a new reservation
+server.post('/new-reservation', (req, res) => {
+    // const { dateDeparture, status, costTotal,
+    //         costPaid, unpaidSince, validationStatus,
+    //         bookMethod, preferredReservation,
+    //         reservedPlace } = req.body;
+    console.log('testtest');
+});
+
+// logout
 server.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/index');
 });
+
+/* 
+    since we don't use partials in this project,
+    the pop-up partial will be retrieved in the view by a post request
+*/
 server.post('/reservation-pop-up', (req, res) => {
     const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { node: req.body });
     res.send(html);
