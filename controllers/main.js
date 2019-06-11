@@ -22,7 +22,7 @@ function showPopUp(node) {
     const children = [...node.children].splice(0, node.children.length - 2);
     for (const child of children) {
         if (child.className.match(/ +/)) child.className = child.className.split(/ +/g)[1];
-        dataToSend[child.className] = child.childNodes[1].value || undefined;
+        dataToSend[child.className] = child.childNodes[1].value;
     }
     $.post('/reservation-pop-up', dataToSend, data => {
         const container = document.querySelector('#pop-up-container');

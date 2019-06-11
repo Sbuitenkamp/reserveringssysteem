@@ -64,7 +64,7 @@ wss.on('connection', ws => {
                 ws.send(JSON.stringify(data));
                 break;
             default:
-                throw new Error('database operation was not defined');
+                throw new Error('database operation was not defined (this is a user-made error)');
         }
     });
 });
@@ -109,40 +109,6 @@ server.post('/authenticate', (req, res) => {
     });
 });
 
-// create a new guest
-server.post('/new-guest', (req, res) => {
-    const { pronoun, name, email, 
-            address, zipCode, cityTown,
-            country, brochureDate, phone,
-            mobilePhone, licensePlate, firstArrival
-        } = req.body;
-    
-    db.guests.create({
-        pronoun: pronoun,
-        name: name,
-        email: email,
-        address: address,
-        zipCode: zipCode,
-        cityTown: cityTown,
-        country: country,
-        brochureDate: brochureDate,
-        phone: phone,
-        mobilePhone: mobilePhone,
-        licensePlate: licensePlate,
-        firstArrival: firstArrival
-        
-    }).then(newGuest => { console.log(newGuest); })
-});
-
-// create a new reservation
-server.post('/new-reservation', (req, res) => {
-    // const { dateDeparture, status, costTotal,
-    //         costPaid, unpaidSince, validationStatus,
-    //         bookMethod, preferredReservation,
-    //         reservedPlace } = req.body;
-    console.log('testtest');
-});
-
 // logout
 server.post('/logout', (req, res) => {
     req.session.destroy();
@@ -159,8 +125,9 @@ server.post('/reservation-pop-up', (req, res) => {
 });
 
 // other functions
-function create({ table, options }) {
+function create({ table, options, values }) {
     console.log(`${new Date()} | creating entry in ${table}...`);
+    return db[table].create(values, options);
 }
 function select({ table, options }) {
     console.log(`${new Date()} | fetching ${options.limit || 'all'} entries from ${table}...`);
@@ -172,4 +139,5 @@ function update({ table, options, values }) {
 }
 function destroy({ table, options }) {
     console.log(`${new Date()} | deleting entries from ${table}...`);
+    return db[table].destroy(options);
 }
