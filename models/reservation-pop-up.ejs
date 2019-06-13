@@ -7,22 +7,30 @@
             </button>
         </div>
     </div>
-    <form action="#">
-        <label id="number" for="number">Nummer
-            <input id="number" name="number" type="text" value="<%= node.number %>" disabled>
-        </label>
-        <label id="name" for="name">Naam
-            <input id="name" name="name" type="text" value="<%= node.name %>" disabled>
-        </label>
-        <label id="costTotal" for="costTotal">Totaal kosten
-            €<input id="costTotal" name="costTotal" type="text" value="<%= node.costTotal %>">
-        </label>
-        <label id="costPaid" for="costPaid">Totaal betaald
-            €<input id="costPaid" name="costPaid" type="text" value="<%= node.costPaid %>">
-        </label>
-        <label id="amountUnpaid" for="amountUnpaid">Openstaand
-            €<input id="amountUnpaid" name="amountUnpaid" type="text" value="<%= node.amountUnpaid %>" disabled>
-        </label>
+    <form action="#" class="form">
+        <div class="form__groups">
+            <label id="number" for="number">
+                <p>Nummer</p>
+                <input id="number" name="number" type="text" value="<%= node.number %>" disabled>
+            </label>
+            <label id="name" for="name">
+                <p>Naam</p>
+                <input id="name" name="name" type="text" value="<%= node.name %>" disabled>
+            </label>
+            <label id="costTotal" for="costTotal">
+                <p>Totaal kosten</p>
+                <input id="costTotal" name="costTotal" type="text" value="<%= node.costTotal %>">
+            </label>
+            <label id="costPaid" for="costPaid">
+                <p>Totaal betaald</p>
+                <input id="costPaid" name="costPaid" type="text" value="<%= node.costPaid %>">
+            </label>
+            <label id="amountUnpaid" for="amountUnpaid">
+                <p>Openstaand</p>
+                <input id="amountUnpaid" name="amountUnpaid" type="text" value="<%= node.amountUnpaid %>" disabled>
+            </label>
+        </div>
+        
         <button class="buttons__add" type="button" onclick="updateReservation(this.parentElement)">Kosten Toevoegen</button>
     </form>
 </div>
