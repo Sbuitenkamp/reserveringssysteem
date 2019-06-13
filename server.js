@@ -70,9 +70,7 @@ server.get('/:path', (req, res) => {
 // Authenticate the user who attempts to login
 server.post('/authenticate', (req, res) => {
     const { username, password } = req.body;
-    db.users.findOne({ where: { userName: username }}).then((user) => {
-        userExists(user, password. user.password);
-    });
+    authenticateUser(username, password)
 });
 
 // Logout
@@ -169,6 +167,11 @@ const switchDestroy = async (data, message) => {
 // Shortened the functions for switch //
 
 // Functions for authenticating the user for login //
+
+const authenticateUser = (username, password) => {
+    db.users.findOne({ where: {userName: username }})
+    .then((user) => userExists(user, password, user.password));
+}
 
 // This will check if the user exists in the database
 const userExists = (user, password, userPassword) => {
