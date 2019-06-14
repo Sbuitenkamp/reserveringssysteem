@@ -23,18 +23,24 @@ function showPopUp(node) {
         const container = document.querySelector('#pop-up-container');
         const popUp = document.createElement('div');
         container.appendChild(popUp);
-        container.style.display = 'block';
+        container.style.display = 'flex';
+        setTimeout( () => {
+            container.classList.add('animate-pop-up');
+        }, 50);
         popUp.innerHTML = data;
         popUp.className = 'pop-up';
         popUp.id = 'pop-up';
-        popUp.style.display = 'block';
+        popUp.style.display = 'flex';
     });
 }
 
 function hidePopUp() {
     const node = document.querySelector('#pop-up-container');
-    node.innerHTML = '';
-    node.style.display = 'none';
+    node.classList.remove('animate-pop-up');
+    setTimeout( () => {
+        node.innerHTML = '';
+        node.style.display = 'none';
+    }, 200);
 }
 
 function formToJSON (elements) {

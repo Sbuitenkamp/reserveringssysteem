@@ -8,17 +8,21 @@
         </div>
     </div>
     <form action="#">
-        <div class="fixedData">
-            <label id="number" for="number">Nummer
+        <div class="form__groups">
+            <label id="number" for="number">
+                <p>Nummer</p>
                 <input id="number" name="number" type="text" value="<%= number %>" disabled>
             </label>
-            <label id="guest" for="guest">Gast
+            <label id="guest" for="guest">
+                <p>Gast</p>
                 <input id="guest" name="guest" type="text" value="<%= result[0].reservationGuest.name %>" disabled>
             </label>
-            <label id="dateArrival" for="dateArrival">Aankomst
+            <label id="dateArrival" for="dateArrival">
+                <p>Aankomst</p>
                 <input id="dateArrival" name="dateArrival" type="text" value="<%=result[0].dateArrival%>" disabled>
             </label>
-            <label id="dateDeparture" for="dateDeparture">Vertrek
+            <label id="dateDeparture" for="dateDeparture">
+                <p>Vertrek</p>
                 <input id="dateDeparture" name="dateDeparture" type="text" value="<%=result[0].dateDeparture%>" disabled>
             </label>
         </div>
