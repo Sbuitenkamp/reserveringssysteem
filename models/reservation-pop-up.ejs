@@ -8,21 +8,63 @@
         </div>
     </div>
     <form action="#">
-        <label id="number" for="number">Nummer
-            <input id="number" name="number" type="text" value="<%= node.number %>" disabled>
-        </label>
-        <label id="name" for="name">Naam
-            <input id="name" name="name" type="text" value="<%= node.name %>" disabled>
-        </label>
-        <label id="costTotal" for="costTotal">Totaal kosten
-            €<input id="costTotal" name="costTotal" type="text" value="<%= node.costTotal %>">
-        </label>
-        <label id="costPaid" for="costPaid">Totaal betaald
-            €<input id="costPaid" name="costPaid" type="text" value="<%= node.costPaid %>">
-        </label>
-        <label id="amountUnpaid" for="amountUnpaid">Openstaand
-            €<input id="amountUnpaid" name="amountUnpaid" type="text" value="<%= node.amountUnpaid %>" disabled>
-        </label>
-        <button class="buttons__add" type="button" onclick="updateReservation(this.parentElement)">Kosten Toevoegen</button>
+        <div class="fixedData">
+            <label id="number" for="number">Nummer
+                <input id="number" name="number" type="text" value="<%= number %>" disabled>
+            </label>
+            <label id="guest" for="guest">Gast
+                <input id="guest" name="guest" type="text" value="<%= result[0].reservationGuest.name %>" disabled>
+            </label>
+            <label id="dateArrival" for="dateArrival">Aankomst
+                <input id="dateArrival" name="dateArrival" type="text" value="<%=result[0].dateArrival%>" disabled>
+            </label>
+            <label id="dateDeparture" for="dateDeparture">Vertrek
+                <input id="dateDeparture" name="dateDeparture" type="text" value="<%=result[0].dateDeparture%>" disabled>
+            </label>
+        </div>
+        <table class="pop-up-table">
+            <thead>
+                <tr>
+                    <th>Object</th>
+                    <th>Totaal kosten</th>
+                    <th>Totaal betaald</th>
+                    <th>Openstaand</th>
+                    <th>Achterstand sinds</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (const dataEntry of result) { %>
+                <tr id="row<%=dataEntry.id%>">
+                    <td class="objectRow">
+                        <input class="data-entry" name="objectRow" type="text" value="<%= dataEntry.reservationObject.description %>" disabled>
+                    </td>
+                    <td class="costTotal">
+                        <input class="data-entry" name="costTotal" type="text" value="<%=dataEntry.costTotal%>">
+                    </td>
+                    <td class="costPaid">
+                        <input class="data-entry" name="costPaid" type="text" value="<%=dataEntry.costPaid%>">
+                    </td>
+                    <td class="amountUnpaid">
+                        <input class="data-entry" name="amountUnpaid" type="text" value="<%=dataEntry.amountUnpaid%>" disabled>
+                    </td>
+                    <td class="unpaidSince">
+                        <input class="data-entry" name="unpaidSince" type="text" value="<%=dataEntry.unpaidSince%>" disabled>
+                    </td>
+                    <td>
+                        <button class="deleteRow" onclick="preventDefault(); deleteReservation(this);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
     </form>
+    <div class="buttons">
+        <button class="buttons__add" type="button" onclick="updateReservation(this.parentElement)">Kosten Toevoegen</button>
+        <button id="<%= number %>" class="deleteReservation" onclick="deleteReservation(this);">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
 </div>

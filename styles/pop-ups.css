@@ -58,9 +58,8 @@
 }
 
 .reservation-pop-up form {
-    margin: 5% 15%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     grid-template-rows: repeat(3, 1fr);
 }
 
@@ -86,27 +85,8 @@
     width: 30%;
 }
 
-.reservation-pop-up #name {
-    grid-row: 1;
-    grid-column: 2;
-}
-
-.reservation-pop-up #costTotal {
-    grid-row: 1;
-    grid-column: 3;
-    width: 30%;
-}
-
-.reservation-pop-up #costPaid {
+.reservation-pop-up form .pop-up-table {
     grid-row: 2;
-    grid-column: 2;
-    width: 30%;
-}
-
-.reservation-pop-up #amountUnpaid {
-    grid-row: 2;
-    grid-column: 3;
-    width: 30%;
 }
 
 .reservation-pop-up .buttons__add {
