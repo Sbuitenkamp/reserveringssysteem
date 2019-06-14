@@ -6,12 +6,13 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { Server: WebSocketServer } = require('ws');
+const { green, yellow, red, blue } = require('chalk');
 const db = require('./models/db');
 const { dbHost } = require('./config.json');
 const port = process.env.PORT || 3000;
 const wss = new WebSocketServer({ port: 40510 });
 
-server.listen(port, () => console.log(`Server listening at http://${dbHost}:${port}`));
+server.listen(port, () => server.log(`Server listening at http://${dbHost}:${port}`));
 server.set('view engine', 'ejs');
 server.use(express.static(`${__dirname}/controllers`));
 server.use(express.static(`${__dirname}/styles`));
@@ -31,19 +32,19 @@ server.use(session({
 // websocket
 wss.on('connection', ws => {
     ws.on('message', async message => {
-        let data;
+        let data = {};
         message = JSON.parse(message);
         switch (message.type) {
             case 'create':
-                switchCreate(data, message)
+                switchCreate(data, message);
                 break;
             case 'select':
                 switchSelect(data, message);
                 break;
             case 'update':
-                switchUpdate(data, message);
+                switchUpdate(data, message)
                 break;
-            case 'delete':
+            case 'destroy':
                 switchDestroy(data, message)
                 break;
             default:
@@ -59,8 +60,10 @@ server.get('/:path', (req, res) => {
     if (!req.session.user && req.params.path !== 'index') return res.redirect('/index');
     if (req.session.user && req.params.path === 'index') return res.redirect('/reservation-overview');
     const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
-    if (fs.existsSync(url) && req.session.user) res.render(url, { username: req.session.user.username });
-    else if (fs.existsSync(url)) res.render(url);
+    if (fs.existsSync(url)) {
+        if (req.session.user) res.render(url, {username: req.session.user.username});
+        else res.render(url);
+    }
     else res.redirect('/page-not-found');
 });
 // Dynamic file serving //
@@ -83,11 +86,30 @@ server.post('/logout', (req, res) => {
     Since we don't use partials in this project,
     the pop-up partial will be retrieved in the view by a post request
 */
-
-server.post('/reservation-pop-up', (req, res) => {
-    const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { node: req.body });
+server.post('/reservation-pop-up', async (req, res) => {
+    return res.end();
+    const result = await select({
+        table: 'reservations',
+        // TODO add select rules
+    });
+    const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { number: req.body.number, result });
     res.send(html);
 });
+
+// logging methods
+server.log = message => {
+    console.log(green(`${blue(new Date())} | ${message}`));
+};
+server.error = (message, e) => {
+    console.log(yellow(`${blue(new Date())} | ${message}`));
+    console.error(red(e));
+};
+
+// db functions
+async function create({ table, values }) {
+    server.log(`creating entry in ${table}...`);
+    values = await associate(table, values);
+    return db[table].create(values).catch(e => server.error('an error occurred while creating entries in database.', e));
 
 // Server post section //
 
@@ -116,16 +138,51 @@ const create = ({ table, options, values }) => {
 }
 
 function select({ table, options }) {
-    console.log(`${new Date()} | fetching ${options.limit || 'all'} entries from ${table}...`);
-    return db[table].findAll(options);
+    server.log(`fetching ${options.limit || 'all'} entries from ${table}...`);
+    return db[table].find(options).catch(e => server.error('an error occurred while selecting entries from database.', e));
 }
+  
+async function update({ table, options, values }) {
+    server.log(`updating entries from ${table}...`);
+    values = await associate(table, values);
+    console.log(values);
+    return db[table].updateOne(options, values).catch(e => server.error('an error occurred while updating entries from database.', e));
 
-function update({ table, options, values }) {
-    console.log(`${new Date()} | updating entries from ${table}...`);
-    return db[table].update(values, options);
-}
 
 function destroy({ table, options }) {
+
+    server.log(`deleting entries from ${table}...`);
+    return db[table].remove(options).catch(e => server.error('an error occurred while deleting entries from database.', e));
+}
+
+// other functions
+function associate(table, values) {
+    return new Promise(async resolve => {
+        if (table === 'reservations') {
+            if (values.guestId) {
+                const guest = await db.guests.findOne({ _id: values.guestId });
+                values.guest = new db.guests({ ...guest._doc });
+                delete values.guestId;
+            }
+            if (values.objectIds) {
+                if (values.objectIds.length) {
+                    await new Promise(res => {
+                        values.objects = [];
+                        values.objectIds.forEach(async (objectId, index) => {
+                            const object = await db.objects.findOne({ _id: objectId });
+                            values.objects[index] = new db.objects({ ...object._doc });
+                        });
+                        setTimeout(() => {
+                            res();
+                        }, 1000);
+                    });
+                }
+                delete values.objectIds;
+            }
+        }
+        resolve(values);
+    });
+
     console.log(`${new Date()} | deleting entries from ${table}...`);
     return db[table].destroy(options);
 }
@@ -149,19 +206,14 @@ const switchCreate = async (data, message) => {
 }
 
 const switchUpdate = async (data, message) => {
-    data = await update(message).catch(e => {
-        console.log(new Date() + '| an error occurred during the updating of one or more database entries:');
-        console.log(e);
-    });
-    data = { update: true };
+    data.rowsAffected = await update(message);
+    data.update = true;
     socketSend(data);
 }
 
 const switchDestroy = async (data, message) => {
-    data = await destroy(message).catch(e => {
-        console.log(new Date() + '| an error occurred during the deletion of one or more database entries:');
-        console.log(e);
-    });
+    data.rowsAffected = await destroy(message);
+    data.destroy = true;
     socketSend(data);
 }
 // Shortened the functions for switch //
@@ -169,8 +221,10 @@ const switchDestroy = async (data, message) => {
 // Functions for authenticating the user for login //
 
 const authenticateUser = (username, password) => {
-    db.users.findOne({ where: {userName: username }})
-    .then((user) => userExists(user, password, user.password));
+    select({ options: { username }, table: 'users' }).then((result) => {
+        const [user] = result;
+        userExists(user, password, user.password)
+    });
 }
 
 // This will check if the user exists in the database
@@ -189,10 +243,26 @@ const userExists = (user, password, userPassword) => {
 */
 
 const validatePassword = (password, userPassword) => {
-    bcrypt.compare(password, userPassword), (err, result) => {
-        if (err) throw err;
-        validResult(result);
-    }
+    bcrypt.compare(password, userPassword, (err, result) => {
+                if (err) throw err;
+                if (!result) {
+                    server.log("Username or password is incorrect");
+                    res.redirect('/');
+                } else {
+                    req.session.user = {
+                        id: user.id,
+                        username: user.username,
+                        superUser: user.superUser
+                    };
+                    update({
+                        table: 'reservations',
+                        options: { id: '5d036fd39d1a97414cb39bcf' },
+                        values: {
+                            objectIds: ['5d03766e24a65318a8d7687b']
+                        }
+                    }).then(() => res.redirect('/reservation-overview'))
+                }
+            });
 }
 
 /*
