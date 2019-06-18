@@ -15,7 +15,7 @@
             </label>
             <label id="guest" for="guest">
                 <p>Gast</p>
-                <input id="guest" name="guest" type="text" value="<%= result[0].reservationGuest.name %>" disabled>
+                <input id="guest" name="guest" type="text" value="<%= result[0].guest.name %>" disabled>
             </label>
             <label id="dateArrival" for="dateArrival">
                 <p>Aankomst</p>
@@ -41,7 +41,7 @@
                 <% for (const dataEntry of result) { %>
                 <tr id="row<%=dataEntry.id%>">
                     <td class="objectRow">
-                        <input class="data-entry" name="objectRow" type="text" value="<%= dataEntry.reservationObject.description %>" disabled>
+                        <input class="data-entry" name="objectRow" type="text" value="<%= dataEntry.objects.map(el => el.description).join(',') %>" disabled>
                     </td>
                     <td class="costTotal">
                         <input class="data-entry" name="costTotal" type="text" value="<%=dataEntry.costTotal%>">

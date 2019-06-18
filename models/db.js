@@ -16,27 +16,7 @@ connection.on('error', e => {
         const model = schemaFile.substr(0, schemaFile.length - 3);
         models[model] = await require(`${__dirname}/schemas/${schemaFile}`).model;
     }
-    // const reservation1 = new schemas.reservations({
-    //     number: 1,
-    //     guestId: 1,
-    //     objectId: 1,
-    //     dateArrival: new Date(),
-    //     dateDeparture: new Date(),
-    //     status: 1,
-    //     costTotal: 10,
-    //     costPaid: 5,
-    //     amountUnpaid: 10-5,
-    //     unpaidSince: new Date(),
-    //     validationStatus: null,
-    //     bookMethod: 'email',
-    //     preferredReservation: true,
-    //     reservedPlace: '12',
-    //     createdAt: new Date()
-    // });
-
-    // await reservation1.save().then(() => console.log('saved reservation1'));
-
-    // const guest1 = new schemas.guests({
+    // const guest1 = new models.guests({
     //     pronoun: 'Dhr.',
     //     name: 'Buitenkamp, S',
     //     email: 'buitenkamp.developer@gmail.com',
@@ -53,13 +33,48 @@ connection.on('error', e => {
     // });
     //
     // guest1.save().then(() => console.log('done'));
+    //
+    // const object = new models.objects({
+    //     code: 'fts',
+    //     description: 'fiets1',
+    //     objectType: 'fiets',
+    //     baseCost: 10,
+    //     owner: '',
+    //     lendOut: false,
+    //     lendOutSince: null,
+    //     blocked: false,
+    //     blockedSince: null,
+    //     blockedUntil: null,
+    // });
+    //
+    // object.save().then(() => console.log('done'));
 
-    // const user1 = new schemas.users({
+    // const reservation1 = new models.reservations({
+    //     number: 1,
+    //     guestId: '5d08a967c2cecf3b0c1b7cfe',
+    //     objectIds: ['5d08a967c2cecf3b0c1b7cff'],
+    //     dateArrival: new Date(),
+    //     dateDeparture: new Date(),
+    //     status: 1,
+    //     costTotal: 10,
+    //     costPaid: 5,
+    //     amountUnpaid: 10-5,
+    //     unpaidSince: new Date(),
+    //     validationStatus: null,
+    //     bookMethod: 'email',
+    //     preferredReservation: true,
+    //     reservedPlace: '12',
+    //     createdAt: new Date()
+    // });
+    //
+    // await reservation1.save().then(() => console.log('saved reservation1'));
+
+    // const user1 = new models.users({
     //     username: 'sbuik',
     //     password: 'admin123',
     //     superUser: true
     // });
-    // const user2 = new schemas.users({
+    // const user2 = new models.users({
     //     username: 'tnoor',
     //     password: 'test',
     //     superUser: false

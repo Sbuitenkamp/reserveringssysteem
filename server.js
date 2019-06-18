@@ -36,17 +36,17 @@ wss.on('connection', ws => {
         message = JSON.parse(message);
         switch (message.type) {
             case 'create':
-                switchCreate(data, message);
-                break;
+                data = await switchCreate(data, message);
+                return ws.send(JSON.stringify(data));
             case 'select':
-                switchSelect(data, message);
-                break;
+                data = await switchSelect(data, message);
+                return ws.send(JSON.stringify(data));
             case 'update':
-                switchUpdate(data, message)
-                break;
+                data = await switchUpdate(data, message);
+                return ws.send(JSON.stringify(data));
             case 'destroy':
-                switchDestroy(data, message)
-                break;
+                data = await switchDestroy(data, message);
+                return ws.send(JSON.stringify(data));
             default:
                 throw new Error('database operation was not defined (this is a user-made error)');
         }
@@ -61,7 +61,7 @@ server.get('/:path', (req, res) => {
     if (req.session.user && req.params.path === 'index') return res.redirect('/reservation-overview');
     const url = path.join(`${__dirname}/views/${req.params.path}.ejs`);
     if (fs.existsSync(url)) {
-        if (req.session.user) res.render(url, {username: req.session.user.username});
+        if (req.session.user) res.render(url, { username: req.session.user.username });
         else res.render(url);
     }
     else res.redirect('/page-not-found');
@@ -70,7 +70,28 @@ server.get('/:path', (req, res) => {
 // Authenticate the user who attempts to login
 server.post('/authenticate', (req, res) => {
     const { username, password } = req.body;
-    authenticateUser(username, password)
+    select({ options: { username }, table: 'users' }).then(result => {
+        const [user] = result;
+        if (!user) {
+            server.log(`user ${username} doesn't exist`);
+            res.redirect('/');
+        } else {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (err) throw err;
+                if (!result) {
+                    server.log(`password for ${username} is incorrect`);
+                    res.redirect('/');
+                } else {
+                    req.session.user = {
+                        id: user.id,
+                        username: user.username,
+                        superUser: user.superUser
+                    };
+                    res.redirect('/reservation-overview');
+                }
+            });
+        }
+    });
 });
 
 // Logout
@@ -84,12 +105,24 @@ server.post('/logout', (req, res) => {
     the pop-up partial will be retrieved in the view by a post request
 */
 server.post('/reservation-pop-up', async (req, res) => {
-    return res.end();
+    req.body.number = Number(req.body.number);
     const result = await select({
         table: 'reservations',
-        // TODO add select rules
+        options: {
+            number: req.body.number,
+        }
     });
     const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { number: req.body.number, result });
+    res.send(html);
+});
+
+server.post('/guest-pop-up', async (req, res) => {
+    req.body.number = Number(req.body.number);
+    const result = await select({
+        table: 'guests',
+        options: { number: req.body.number }
+    });
+    const html = res.render(path.join(`${__dirname}/models/guest-pop-up.ejs`), { number: req.body.number, result });
     res.send(html);
 });
 
@@ -102,14 +135,9 @@ server.error = (message, e) => {
     console.error(red(e));
 };
 
-function socketSend(data) {
-    ws.send(JSON.stringify(data));
-}
-
 // CRUD functions //
 async function create({ table, values }) {
     server.log(`creating entry in ${table}...`);
-    values = await associate(table, values);
     return db[table].create(values).catch(e => server.error('an error occurred while creating entries in database.', e));
 }
 
@@ -120,7 +148,6 @@ function select({ table, options }) {
   
 async function update({ table, options, values }) {
     server.log(`updating entries from ${table}...`);
-    values = await associate(table, values);
     return db[table].updateOne(options, values).catch(e => server.error('an error occurred while updating entries from database.', e));
 }
 
@@ -129,124 +156,27 @@ function destroy({ table, options }) {
     return db[table].remove(options).catch(e => server.error('an error occurred while deleting entries from database.', e));
 }
 
-// other functions
-function associate(table, values) {
-    return new Promise(async resolve => {
-        if (table === 'reservations') {
-            if (values.guestId) {
-                const guest = await db.guests.findOne({ _id: values.guestId });
-                values.guest = new db.guests({ ...guest._doc });
-                delete values.guestId;
-            }
-            if (values.objectIds) {
-                if (values.objectIds.length) {
-                    await new Promise(res => {
-                        values.objects = [];
-                        values.objectIds.forEach(async (objectId, index) => {
-                            const object = await db.objects.findOne({ _id: objectId });
-                            values.objects[index] = new db.objects({ ...object._doc });
-                        });
-                        setTimeout(() => {
-                            res();
-                        }, 1000);
-                    });
-                }
-                delete values.objectIds;
-            }
-        }
-        resolve(values);
-    });
-}
-
-// Shortened the functions for switch //
+// Shortened the functions for switch (except it ain't shorter u nub ¯\_(ツ)_/¯)
 async function switchSelect(data, message) {
-    data = await select(message).catch(e => {
+    return select(message).catch(e => {
         server.log('| an error occurred during the selection of one or more database entries:');
         server.error(e);
     });
-    socketSend(data);
 }
 
 async function switchCreate(data, message) {
-    data = await create(message).catch(e => {
+    return create(message).catch(e => {
         server.log(new Date() + '| an error occurred during the creation of one or more database entries:');
         server.error(e);
     });
-    socketSend(data);
 }
 
 async function switchUpdate(data, message) {
     data.rowsAffected = await update(message);
     data.update = true;
-    socketSend(data);
 }
 
 async function switchDestroy(data, message) {
     data.rowsAffected = await destroy(message);
     data.destroy = true;
-    socketSend(data);
-}
-
-// Functions for authenticating the user for login
-function authenticateUser(username, password) {
-    select({ options: { username }, table: 'users' }).then((result) => {
-        const [user] = result;
-        userExists(user, password, user.password)
-    });
-}
-
-// This will check if the user exists in the database
-function userExists(user, password, userPassword) {
-    if (!user) {
-        server.log("Username or password is incorrect");
-        res.redirect('/');
-    } else {
-        validatePassword(password, userPassword)
-    }
-}
-
-/*
-    This will use bcrypt.compare to see if the passwords match
-    If the passwords match, it will pass the result into validResult()
-*/
-
-function validatePassword(password, userPassword) {
-    bcrypt.compare(password, userPassword, (err, result) => {
-        if (err) throw err;
-        if (!result) {
-            server.log("Username or password is incorrect");
-            res.redirect('/');
-        } else {
-            req.session.user = {
-                id: user.id,
-                username: user.username,
-                superUser: user.superUser
-            };
-            update({
-                table: 'reservations',
-                options: { id: '5d036fd39d1a97414cb39bcf' },
-                values: {
-                    objectIds: ['5d03766e24a65318a8d7687b']
-                }
-            }).then(() => res.redirect('/reservation-overview'))
-        }
-    });
-}
-/*
-    This is for bcrypt.compare, since it takes 'err' and 'result' as callback
-    If there is no result, the user can't be logged in and had to try again
-*/
-
-function validResult(result) {
-    if (!result) {
-        server.log("Username or password is incorrect");
-        res.redirect('/');
-    } else {
-        req.session.user = {
-            id: user.id,
-            username: user.userName,
-            superUser: user.superUser
-        };
-        res.redirect('/reservation-overview');
-    }
 }

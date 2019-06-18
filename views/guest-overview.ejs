@@ -1,0 +1,39 @@
+<%- include ../models/header.ejs %>
+<head>
+    <title>Gasten</title>
+    <link rel="stylesheet" href="reservation-overview.css">
+    <script src="reservation-overview.js"></script>
+</head>
+<body>
+<div class="content" id="content">
+    <div class="header">
+        <h1>Gasten</h1>
+        <div class="header__buttons">
+            <button class="buttons__add">Nieuwe gast<i class="plus fas fa-plus"></i></button>
+            <div class="buttons__search">
+                <input type="text" placeholder="Zoeken" class="search__input">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nummer</th>
+                <th>Aanhef</th>
+                <th>Naam</th>
+                <th>Email</th>
+                <th>Adres</th>
+                <th>Postcode</th>
+                <th>Brochure datum</th>
+                <th>Telefoon 1</th>
+                <th>Telefoon 2</th>
+                <th>Kenteken</th>
+                <th>Eerste aankomst</th>
+                <th>Ongewenst</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+</body>

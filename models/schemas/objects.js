@@ -2,10 +2,9 @@ const { Schema, model } = require('mongoose');
 const ObjectsSchema = new Schema({
     code: String,
     description: String,
-    objectKind: String,
     objectType: String,
     baseCost: Number,
-    owner: Number,
+    owner: String,
     lendOut: Boolean,
     lendOutSince: Date,
     blocked: Boolean,

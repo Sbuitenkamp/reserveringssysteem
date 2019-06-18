@@ -1,17 +1,7 @@
 const ws = new WebSocket('ws://localhost:40510');
 
-function validateNode(node) {
-    if (node.nodeName === '#text') return true;
-    if (node.className.includes('date')) return true;
-    if (node.className.includes('address')) return true;
-    if (node.className.includes('mobilePhone')) return true;
-    if (node.className.includes('validation')) return true;
-    if (node.className.includes('createdAt')) return true;
-    if (node.className.includes('delete')) return true;
-    if (node.className.includes('edit')) return true;
-}
-
-function makeActive(node) {
+function makeActive() {
+    const node = document.querySelector(`.link>a[href="${window.location.pathname}"]`);
     const active = document.querySelector('.active');
     if (active) active.classList.remove('active');
     if (node) node.parentElement.classList.add('active');
@@ -19,19 +9,23 @@ function makeActive(node) {
 
 function showPopUp(node) {
     const dataToSend = node.children[0].children[0].value;
-    $.post('/reservation-pop-up', { number: dataToSend }, data => {
-        const container = document.querySelector('#pop-up-container');
-        const popUp = document.createElement('div');
-        container.appendChild(popUp);
-        container.style.display = 'flex';
-        setTimeout( () => {
-            container.classList.add('animate-pop-up');
-        }, 50);
-        popUp.innerHTML = data;
-        popUp.className = 'pop-up';
-        popUp.id = 'pop-up';
-        popUp.style.display = 'flex';
-    });
+    const location = window.location.pathname.substr(1).split(/-+/g)[0];
+    if (location === 'reservation') $.post('/reservation-pop-up', { number: dataToSend }, data => renderPopUp(data));
+    else if (location === 'guest') $.post('/guest-pop-up', { number: dataToSend }, data => renderPopUp(data));
+}
+
+function renderPopUp(data) {
+    const container = document.querySelector('#pop-up-container');
+    const popUp = document.createElement('div');
+    container.appendChild(popUp);
+    container.style.display = 'flex';
+    setTimeout( () => {
+        container.classList.add('animate-pop-up');
+    }, 50);
+    popUp.innerHTML = data;
+    popUp.className = 'pop-up';
+    popUp.id = 'pop-up';
+    popUp.style.display = 'flex';
 }
 
 function hidePopUp() {
@@ -42,15 +36,6 @@ function hidePopUp() {
         node.style.display = 'none';
     }, 200);
 }
-
-function formToJSON (elements) {
-    return [].reduce.call(elements, (data, element) => {
-        if (element.tagName === 'BUTTON') return data;
-        data[element.name] = element.value;
-        return data;
-    }, {});
-}
-
 
 function outerParent(elt) {
     while (elt && (elt.tagName !== "TR" || !elt.id)) elt = elt.parentNode;
@@ -100,4 +85,28 @@ function deleteReservation(node) {
 
 function error(message) {
     alert(message);
+}
+
+// event emitted when connected
+function wsOnOpen() {
+    // getting table name from path location
+    const table = window.location.pathname.substr(1).split(/-+/g)[0] + 's';
+    // sending a send event to websocket server
+    ws.send(JSON.stringify({
+        table,
+        type: 'select',
+        options: {}
+    }));
+}
+
+function wsOnMessage(ev) {
+    const location = window.location.pathname.substr(1).split(/-+/g)[0];
+    const data = JSON.parse(ev.data);
+    const table = document.querySelector('table');
+    if (data.update || data.destroy) return reload(table);
+    for (const dataEntry of data) {
+        // rendering the data in a row
+        if (location === 'reservation') table.innerHTML += reservationRow(dataEntry);
+        else if (location === 'guest') table.innerHTML += guestRow(dataEntry);
+    }
 }
