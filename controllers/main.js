@@ -1,4 +1,5 @@
 const ws = new WebSocket('ws://localhost:40510');
+let expanded = false;
 
 function makeActive() {
     const node = document.querySelector(`.link>a[href="${window.location.pathname}"]`);
@@ -7,11 +8,11 @@ function makeActive() {
     if (node) node.parentElement.classList.add('active');
 }
 
-function showPopUp(node) {
-    const dataToSend = node.children[0].children[0].value;
-    const location = window.location.pathname.substr(1).split(/-+/g)[0];
-    if (location === 'reservation') $.post('/reservation-pop-up', { number: dataToSend }, data => renderPopUp(data));
-    else if (location === 'guest') $.post('/guest-pop-up', { number: dataToSend }, data => renderPopUp(data));
+function showPopUp({ node, location, table }) {
+    let dataToSend;
+    if (node) dataToSend = node.children[0].children[0].value;
+    if (!location) location = window.location.pathname.substr(1).split(/-+/g)[0];
+    $.post('/pop-up', { number: dataToSend, location, table }, data => renderPopUp(data));
 }
 
 function renderPopUp(data) {
@@ -19,9 +20,7 @@ function renderPopUp(data) {
     const popUp = document.createElement('div');
     container.appendChild(popUp);
     container.style.display = 'flex';
-    setTimeout( () => {
-        container.classList.add('animate-pop-up');
-    }, 50);
+    setTimeout( () => container.classList.add('animate-pop-up'), 50);
     popUp.innerHTML = data;
     popUp.className = 'pop-up';
     popUp.id = 'pop-up';
@@ -42,48 +41,8 @@ function outerParent(elt) {
     if (elt) return elt;
 }
 
-function determineType(node, type) {
-    if (type === 'reservering')  {
-        const number = node.id.splice(0, -1);
-        return { number };
-    } else if (type === 'rij') {
-        const idString = outerParent().id;
-        const id = Number(idString.substr(idString.length - 1));
-        return { id };
-    }
-}
-
-function updateReservation(form) {
-    if (!form) return error('Er is iets misgegaan');
-
-    ws.send(JSON.stringify({
-        type: 'update',
-        table: 'reservations',
-        options,
-        values: {
-            costTotal,
-            costPaid,
-            amountUnpaid: costTotal - costPaid
-        }
-    }));
-    hidePopUp();
-}
-
-function deleteReservation(node) {
-    if (!node) return;
-    const type = node.className === 'deleteReservation' ? 'reservering' : 'rij';
-    const confirm = window.confirm(`Weet u zeker dat u deze ${type} wilt verwijderen?`);
-    let options = {};
-    if (!confirm) return;
-    options.where = determineType(node , type);
-    ws.send(JSON.stringify({
-        type: 'destroy',
-        table: 'reservations',
-        options
-    }))
-}
-
 function error(message) {
+    // TODO: create error function for error display
     alert(message);
 }
 
@@ -109,4 +68,72 @@ function wsOnMessage(ev) {
         if (location === 'reservation') table.innerHTML += reservationRow(dataEntry);
         else if (location === 'guest') table.innerHTML += guestRow(dataEntry);
     }
+}
+
+// database operations
+function addEntry(data) {
+    if (!data) return error('Er is iets misgegaan');
+    console.log(data);
+}
+
+function updateEntry(data) {
+    if (!data) return error('Er is iets misgegaan');
+
+    ws.send(JSON.stringify({
+        type: 'update',
+        table: 'reservations',
+        options,
+        values: {
+            costTotal,
+            costPaid,
+            amountUnpaid: costTotal - costPaid
+        }
+    }));
+    hidePopUp();
+}
+
+function deleteEntry(data) {
+    if (!data) return;
+    const confirm = window.confirm(`Weet u zeker dat u deze record wilt verwijderen?`);
+    let options = { number: data.number };
+    if (!confirm) return;
+    ws.send(JSON.stringify({
+        type: 'destroy',
+        table: data.table,
+        options
+    }));
+}
+
+// form to json
+function isValidElement(element) {
+    return element.name && element.value;
+}
+
+function isValidValue(element) {
+    return (!['checkbox', 'radio'].includes(element.type) || element.checked);
+}
+
+function isCheckbox(element) {
+    return element.type === 'checkbox';
+}
+
+function isMultiSelect(element) {
+    return element.options && element.multiple;
+}
+
+function getSelectValues(options) {
+    [].reduce.call(options, (values, option) => {
+        return option.selected ? values.concat(option.value) : values;
+    }, []);
+}
+
+function formToJSON(elements) {
+    [].reduce.call(elements, (data, element) => {
+        if (isValidElement(element) && isValidValue(element)) {
+            if (isCheckbox(element)) data[element.name] = (data[element.name] || []).concat(element.value);
+            else if (isMultiSelect(element)) data[element.name] = getSelectValues(element);
+            else data[element.name] = element.value;
+        }
+        return data;
+    }, {});
 }

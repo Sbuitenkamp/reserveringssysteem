@@ -1,8 +1,8 @@
 function reservationRow(dataEntry) {
     return `
 <tbody class="tbody">
-<form action="/reservation-pop-up" method="get">
-    <tr id="row${dataEntry.number}" onclick="showPopUp(this)">
+<form action="/pop-up" method="get">
+    <tr id="row${dataEntry.number}" onclick="showPopUp({ node: this, table: 'reservations' })">
         <td>
             <input class="data-entry" name="number" type="text" value="${dataEntry.number}" disabled>
         </td>
@@ -80,8 +80,8 @@ function reservationRow(dataEntry) {
 function guestRow(dataEntry) {
     return `
 <tbody class="tbody">
-<form action="/reservation-pop-up" method="get">
-    <tr id="row${dataEntry.number}" onclick="showPopUp(this)">
+<form action="/pop-up" method="get">
+    <tr id="row${dataEntry.number}" onclick="showPopUp({ node: this, table: 'guests' })">
         <td>
             <input class="data-entry" name="number" type="text" value="${dataEntry.number}" disabled>
         </td>

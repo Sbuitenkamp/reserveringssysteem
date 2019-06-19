@@ -1,6 +1,6 @@
 <div class="guest-pop-up" id="guest-pop-up">
     <div class="pop-up__header">
-        <h1>Reservering</h1>
+        <h1>Gast</h1>
         <div class="button-wrapper">
             <button class="close" onclick="hidePopUp()">
                 <i class="fas fa-times"></i>
@@ -19,7 +19,7 @@
             </label>
             <label id="dateArrival" for="dateArrival">
                 <p>Email</p>
-                <input id="dateArrival" name="dateArrival" type="text" value="<%=result[0].email%>">
+                <input id="dateArrival" name="dateArrival" type="text" value="<%= result[0].email %>">
             </label>
             <label id="dateDeparture" for="dateDeparture">
                 <p>Postcode</p>
@@ -28,9 +28,6 @@
         </div>
     </form>
     <div class="buttons">
-        <button class="buttons__add" type="button" onclick="updateReservation(this.parentElement)">Kosten Toevoegen</button>
-        <button id="<%= number %>" class="deleteReservation" onclick="deleteReservation(this);">
-            <i class="fas fa-times"></i>
-        </button>
+        <button class="buttons__add" type="button" onclick="updateEntry(this)">Kosten Toevoegen</button>
     </div>
 </div>

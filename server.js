@@ -8,11 +8,10 @@ const bcrypt = require('bcrypt');
 const { Server: WebSocketServer } = require('ws');
 const { green, yellow, red, blue } = require('chalk');
 const db = require('./models/db');
-const { dbHost } = require('./config.json');
-const port = process.env.PORT || 3000;
+const { host, port } = require('./config.json');
 const wss = new WebSocketServer({ port: 40510 });
 
-server.listen(port, () => server.log(`Server listening at http://${dbHost}:${port}`));
+server.listen(port, () => server.log(`Server listening at http://${host}:${port}`));
 server.set('view engine', 'ejs');
 server.use(express.static(`${__dirname}/controllers`));
 server.use(express.static(`${__dirname}/styles`));
@@ -36,16 +35,24 @@ wss.on('connection', ws => {
         message = JSON.parse(message);
         switch (message.type) {
             case 'create':
-                data = await switchCreate(data, message);
+                data = await create(message).catch(e => {
+                    server.log('| an error occurred during the selection of one or more database entries:');
+                    server.error(e);
+                });
                 return ws.send(JSON.stringify(data));
             case 'select':
-                data = await switchSelect(data, message);
+                data = await select(message).catch(e => {
+                    server.log(new Date() + '| an error occurred during the creation of one or more database entries:');
+                    server.error(e);
+                });
                 return ws.send(JSON.stringify(data));
             case 'update':
-                data = await switchUpdate(data, message);
+                data.rowsAffected = await update(message);
+                data.update = true;
                 return ws.send(JSON.stringify(data));
             case 'destroy':
-                data = await switchDestroy(data, message);
+                data.rowsAffected = await destroy(message);
+                data.destroy = true;
                 return ws.send(JSON.stringify(data));
             default:
                 throw new Error('database operation was not defined (this is a user-made error)');
@@ -104,25 +111,40 @@ server.post('/logout', (req, res) => {
     Since we don't use partials in this project,
     the pop-up partial will be retrieved in the view by a post request
 */
-server.post('/reservation-pop-up', async (req, res) => {
+server.post('/pop-up', async (req, res) => {
     req.body.number = Number(req.body.number);
-    const result = await select({
-        table: 'reservations',
-        options: {
-            number: req.body.number,
+    let result;
+    if (req.body.number) {
+        result = await select({
+            table: req.body.table,
+            options: { number: req.body.number }
+        });
+    } else {
+        const res = await select({
+            table: req.body.table,
+            options: {}
+        });
+        res.sort((a, b) => {
+            if ( a._doc.number < b._doc.number )return -1;
+            if ( a._doc.number > b._doc.number )return 1;
+            return 0;
+        });
+        if (req.body.table !== 'guests') {
+            result = {
+                guests: await select({
+                    table: 'guests',
+                    options: {}
+                }),
+                objects: await select({
+                    table: 'objects',
+                    options: { lendOut: false }
+                })
+            }
         }
-    });
-    const html = res.render(path.join(`${__dirname}/models/reservation-pop-up.ejs`), { number: req.body.number, result });
-    res.send(html);
-});
-
-server.post('/guest-pop-up', async (req, res) => {
-    req.body.number = Number(req.body.number);
-    const result = await select({
-        table: 'guests',
-        options: { number: req.body.number }
-    });
-    const html = res.render(path.join(`${__dirname}/models/guest-pop-up.ejs`), { number: req.body.number, result });
+        if (res) req.body.number = res[0]._doc.number + 1;
+        else req.body.number = 1;
+    }
+    const html = res.render(path.join(`${__dirname}/models/${req.body.location}-pop-up.ejs`), { number: req.body.number, result });
     res.send(html);
 });
 
@@ -145,7 +167,7 @@ function select({ table, options }) {
     server.log(`fetching ${options.limit || 'all'} entries from ${table}...`);
     return db[table].find(options).catch(e => server.error('an error occurred while selecting entries from database.', e));
 }
-  
+
 async function update({ table, options, values }) {
     server.log(`updating entries from ${table}...`);
     return db[table].updateOne(options, values).catch(e => server.error('an error occurred while updating entries from database.', e));
@@ -154,29 +176,4 @@ async function update({ table, options, values }) {
 function destroy({ table, options }) {
     server.log(`deleting entries from ${table}...`);
     return db[table].remove(options).catch(e => server.error('an error occurred while deleting entries from database.', e));
-}
-
-// Shortened the functions for switch (except it ain't shorter u nub ¯\_(ツ)_/¯)
-async function switchSelect(data, message) {
-    return select(message).catch(e => {
-        server.log('| an error occurred during the selection of one or more database entries:');
-        server.error(e);
-    });
-}
-
-async function switchCreate(data, message) {
-    return create(message).catch(e => {
-        server.log(new Date() + '| an error occurred during the creation of one or more database entries:');
-        server.error(e);
-    });
-}
-
-async function switchUpdate(data, message) {
-    data.rowsAffected = await update(message);
-    data.update = true;
-}
-
-async function switchDestroy(data, message) {
-    data.rowsAffected = await destroy(message);
-    data.destroy = true;
 }

@@ -16,8 +16,10 @@ connection.on('error', e => {
         const model = schemaFile.substr(0, schemaFile.length - 3);
         models[model] = await require(`${__dirname}/schemas/${schemaFile}`).model;
     }
+    // NOTE: dummy data for testing, uncomment after use else you get duplicates
     // const guest1 = new models.guests({
     //     pronoun: 'Dhr.',
+    //     number: 1,
     //     name: 'Buitenkamp, S',
     //     email: 'buitenkamp.developer@gmail.com',
     //     address: 'jongebuorren 5',
@@ -51,8 +53,8 @@ connection.on('error', e => {
 
     // const reservation1 = new models.reservations({
     //     number: 1,
-    //     guestId: '5d08a967c2cecf3b0c1b7cfe',
-    //     objectIds: ['5d08a967c2cecf3b0c1b7cff'],
+    //     guestId: '5d0a44e056f9b22bb47882f4',
+    //     objectIds: ['5d0a44e056f9b22bb47882f5'],
     //     dateArrival: new Date(),
     //     dateDeparture: new Date(),
     //     status: 1,

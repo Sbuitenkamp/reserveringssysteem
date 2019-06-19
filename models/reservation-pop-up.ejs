@@ -55,20 +55,12 @@
                     <td class="unpaidSince">
                         <input class="data-entry" name="unpaidSince" type="text" value="<%=dataEntry.unpaidSince%>" disabled>
                     </td>
-                    <td>
-                        <button class="deleteRow" onclick="preventDefault(); deleteReservation(this);">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </td>
                 </tr>
                 <% } %>
             </tbody>
         </table>
     </form>
     <div class="buttons">
-        <button class="buttons__add" type="button" onclick="updateReservation(this.parentElement)">Kosten Toevoegen</button>
-        <button id="<%= number %>" class="deleteReservation" onclick="deleteReservation(this);">
-            <i class="fas fa-times"></i>
-        </button>
+        <button class="buttons__add" type="button" onclick="updateEntry(this)">Kosten Toevoegen</button>
     </div>
 </div>
