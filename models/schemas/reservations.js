@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const { red } = require('chalk');
 const { schema: GuestSchema, model: guestModel } = require('./guests');
 const { schema: ObjectSchema, model: objectModel } = require('./objects');
 const ReservationsSchema = new Schema({
@@ -23,8 +24,8 @@ const ReservationsSchema = new Schema({
 
 ReservationsSchema.pre('save', async function(next) {
     if (this.guestId) {
-        const guest = await guestModel.findOne({ _id: this.guestId });
-        this.guest = new guestModel({ ...guest._doc });
+        const guest = await guestModel.findById(this.guestId).catch(() => console.log(red('Invalid ObjectId')));
+        if (guest) this.guest = new guestModel({ ...guest._doc });
         this.guestId = undefined;
     }
     if (this.objectIds) {
@@ -32,8 +33,8 @@ ReservationsSchema.pre('save', async function(next) {
             this.objects = [];
             for (const key in this.objectIds) {
                 if (key === 'validators') continue;
-                const object = await objectModel.findOne({ _id: this.objectIds[key] });
-                this.objects[key] = new objectModel({ ...object._doc });
+                const object = await objectModel.findById(this.objectIds[key]).catch(() => console.log(red('Invalid ObjectId')));
+                if (object) this.objects[key] = new objectModel({ ...object._doc });
             }
         }
         this.objectIds = undefined;

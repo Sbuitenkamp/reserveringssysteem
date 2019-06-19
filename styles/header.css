@@ -7,31 +7,13 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: var(--brokenWhite);
 }
 
 body {
     display: flex;
 }
-
-/*body scrollbar*/
-/*body::-webkit-scrollbar {*/
-/*    width: 20px;*/
-/*}*/
-
-/*body::-webkit-scrollbar-track {*/
-/*    border-radius: 10px;*/
-/*}*/
-
-/*body::-webkit-scrollbar-thumb {*/
-/*    background: var(--lightBlue);*/
-/*    border-radius: 10px;*/
-/*}*/
-
-/*body::-webkit-scrollbar-thumb:hover {*/
-/*    background: var(--blue);*/
-/*}*/
 
 a {
     text-decoration: none;
@@ -158,20 +140,20 @@ Bottom Section Sidebar
     padding-left: 50px; // Do not use any calc() here, the padding affects the x-scrollbar
 }
 
-/* content scrollbar */
-.content::-webkit-scrollbar {
+/* fancy scrollbarz */
+.table::-webkit-scrollbar, .content::-webkit-scrollbar {
     width: 20px;
 }
 
-.content::-webkit-scrollbar-track {
+.table::-webkit-scrollbar-track, .content::-webkit-scrollbar-track {
     border-radius: 10px;
 }
 
-.content::-webkit-scrollbar-thumb {
+.table::-webkit-scrollbar-thumb, .content::-webkit-scrollbar-thumb {
     background: var(--lightBlue);
     border-radius: 10px;
 }
 
-.content::-webkit-scrollbar-thumb:hover {
+.table::-webkit-scrollbar-thumb:hover, .content::-webkit-scrollbar-thumb:hover {
     background: var(--blue);
 }

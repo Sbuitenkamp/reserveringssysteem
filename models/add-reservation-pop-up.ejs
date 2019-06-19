@@ -1,0 +1,41 @@
+<div class="add-reservation-pop-up" id="add-reservation-pop-up">
+    <div class="pop-up__header">
+        <h1>Reservering maken</h1>
+        <div class="button-wrapper">
+            <button class="close" onclick="hidePopUp()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="pop-up__content">
+        <form class="add-form">
+            <input type="text" name="number" value="<%= number %>" disabled>
+            <select name="guestId" type="text">
+                <% for (const dataEntry of result.guests) { %>
+                <option value="<%= dataEntry._doc._id %>"><%= dataEntry._doc.name %></option>
+                <% } %>
+            </select>
+            <!--make a nice dropdown of off this if you can, I bewieve in you :blobreach:-->
+            <div class="pop-up__checkboxes">
+                <label>Object(en)
+                    <% for (const dataEntry of result.objects) { %>
+                    <input type="checkbox" value="<%= dataEntry._doc._id %>"><%= dataEntry._doc.description %></input>
+                    <% } %>
+                </label>
+            </div>
+            <input name="dateArrival" type="date" placeholder="Aankomst">
+            <input name="dateDeparture" type="date" placeholder="Vertrek">
+            <input name="status" type="text" placeholder="Status">
+            <input name="costTotal" type="text" placeholder="Kosten">
+            <input name="costPaid" type="text" placeholder="Betaald">
+            <input name="amountUnpaid" type="text" placeholder="Achterstand">
+            <input name="unpaidSince" type="date" placeholder="Achterstand sinds">
+            <input name="validationStatus" type="text" placeholder="Validatie status">
+            <input name="bookMethod" type="text" placeholder="Boek methode">
+            <input name="preferredReservation" type="text" placeholder="Voorkeursboeking">
+            <input name="reservedPlace" type="text" placeholder="">
+        </form>
+        <!--TODO: fix this-->
+        <button class="form__button" onclick="addEntry(formToJSON(document.querySelector('form.add-form').children));">Reservering maken</button>
+    </div>
+</div>
