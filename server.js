@@ -23,7 +23,7 @@ server.use((req, res, next) => {
     next();
 });
 server.use(session({
-    secret: 'yrla is thicc af',
+    secret: 'SecretTokenThatNeedsToBeChanged(OrNot)',
     resave: false,
     saveUninitialized: false
 }));
